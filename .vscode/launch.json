@@ -1,0 +1,41 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": ".NET Core Launch (Ubuntu)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/THeGuID/bin/Debug/net5.0/THeGuID.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/THeGuID/bin/Debug/net5.0/",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": ".NET Core Launch (Raspi)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "dotnet",
+            "args": ["THeGuID.dll"],
+            "cwd": "/home/pi/Documents/bin/THeGuID/",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "pipeTransport": {
+				"pipeCwd": "${workspaceRoot}",
+				"pipeProgram": "ssh",
+				"pipeArgs": [
+					"-T",
+                    // "pi@192.168.0.18"
+                    "pi@10.205.124.175"
+                    // "pi@192.168.3.12"
+				],
+				"debuggerPath": "~/.vsdbg/vsdbg"
+			}
+        }
+    ]
+}
