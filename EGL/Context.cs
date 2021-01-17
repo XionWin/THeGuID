@@ -296,6 +296,9 @@ namespace EGL
         // int fd_gpu;
         internal EGLDisplay dpy;
         internal EGLContext ctx;
+        internal EGLSurface surface;
+
+
         internal EGLConfig currentCfg;
 
         int major, minor;
@@ -306,6 +309,11 @@ namespace EGL
         public string OffScreenExtensions => QueryString(IntPtr.Zero, Egl.EXTENSIONS);
 
         public RenderableSurfaceType RenderableSurfaceType { get; init; }
+
+        public nint EglDisplay => this.dpy;
+        public nint EglContext => this.ctx;
+
+        public nint EglSurface => this.surface;
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate nint GetPlatformDisplayEXTHandler (uint platform, nint native_display, uint *attrib_list);
@@ -320,7 +328,6 @@ namespace EGL
 
             dpy = handler is null ? GetDisplay(gbm.GbmHandler) : handler(EGL_PLATFORM_GBM_KHR, gbm.GbmHandler, null);
             
-
             if (dpy == IntPtr.Zero)
                 throw new NotSupportedException("[EGL] GetDisplay failed.: " + GetError());
 
@@ -358,7 +365,7 @@ namespace EGL
             if (ctx == IntPtr.Zero)
                 throw new NotSupportedException(String.Format("[EGL] Failed to create egl context, error {0}.", GetError()));
 
-            var surface = eglCreateWindowSurface(dpy, currentCfg, gbm.SurfaceHandler, null);
+            surface = eglCreateWindowSurface(dpy, currentCfg, gbm.SurfaceHandler, null);
 
             if (surface == IntPtr.Zero)
                 throw new NotSupportedException(String.Format("[EGL] Failed to create egl surface, error {0}.", GetError()));
