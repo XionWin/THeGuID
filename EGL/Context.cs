@@ -300,15 +300,10 @@ namespace EGL
 
         int major, minor;
 
-        private string _version = null;
-        public string Version => _version ?? (_version = QueryString(dpy, Egl.VERSION));
-        private string _vendor = null;
-        public string Vendor => _vendor ?? (_vendor = QueryString(dpy, Egl.VENDOR));
-        private string _extensions = null;
-        public string Extensions => _extensions ?? (_extensions = QueryString(dpy, Egl.EXTENSIONS));
-
-        private string _offScreenExtensions = null;
-        public string OffScreenExtensions => _offScreenExtensions ?? (_offScreenExtensions = QueryString(IntPtr.Zero, Egl.EXTENSIONS));
+        public string Version => QueryString(dpy, Egl.VERSION);
+        public string Vendor => QueryString(dpy, Egl.VENDOR);
+        public string Extensions => QueryString(dpy, Egl.EXTENSIONS);
+        public string OffScreenExtensions => QueryString(IntPtr.Zero, Egl.EXTENSIONS);
 
         public RenderableSurfaceType RenderableSurfaceType { get; init; }
 

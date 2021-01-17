@@ -73,7 +73,7 @@ namespace DRM
 
         public override string ToString()
         {
-            return string.Format("[Crtc: Id={0}, CurrentMode={1}, CurrentFbId={2}, ModeIsValid={3}, X={4}, Y={5}, Width={7}, Height={6}, GammaSize={8}]", Id, CurrentMode, CurrentFbId, ModeIsValid, X, Y, Width, Height, GammaSize);
+            return string.Format("[Crtc: Id={0}, CurrentMode={1}, CurrentFbId={2}, ModeIsValid={3}, X={4}, Y={5}, Width={6}, Height={7}, GammaSize={8}]", Id, CurrentMode, CurrentFbId, ModeIsValid, X, Y, Width, Height, GammaSize);
         }
     }
 }
