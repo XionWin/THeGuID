@@ -15,7 +15,7 @@ namespace THeGuID
 
         static void WndCreate()
         {
-            var deviceName = "/dev/dri/card1";
+            var deviceName = "/dev/dri/card0";
             var drm = new DRM.Drm();
             var fd = Libc.Context.open(deviceName, Libc.OpenFlags.ReadWrite);
             using (var resources = new DRM.Resources(fd))

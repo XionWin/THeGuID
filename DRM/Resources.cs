@@ -43,10 +43,10 @@ namespace DRM
         }
         #endregion
 
-        public uint min_width { get { return handle->min_width; } }
-        public uint max_width { get { return handle->max_width; } }
-        public uint min_height { get { return handle->min_height; } }
-        public uint max_height { get { return handle->max_height; } }
+        public uint MinWidth => handle->min_width;
+        public uint MaxWidth => handle->max_width;
+        public uint MinHeight => handle->min_height;
+        public uint MaxHeight => handle->max_height;
 
         public Connector[] Connectors
         {
