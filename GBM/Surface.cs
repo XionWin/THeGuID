@@ -7,7 +7,10 @@ namespace GBM
     {
         #region pinvoke
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        static extern nint gbm_surface_create(nint gbm, int width, int height, SurfaceFormat format, SurfaceFlags flags);
+        static extern nint gbm_surface_create(nint gbm, uint width, uint height, SurfaceFormat format, SurfaceFlags flags);
+
+        [DllImport(Lib.Name, EntryPoint = "gbm_surface_create_with_modifiers", CallingConvention = CallingConvention.Cdecl)]
+        static extern nint gbm_surface_create_with_modifiers(nint gbm, uint width, uint height, SurfaceFormat format, ulong* modifiers, uint count);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void gbm_surface_destroy(nint surface);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
@@ -18,30 +21,41 @@ namespace GBM
         static extern int gbm_surface_has_free_buffers(nint surface);
         #endregion
 
-        internal nint handle;
+        private nint handler;
+
+        public nint Handler => this.handler;
 
         #region ctor
-        public Surface(Device gbmDev, int width, int height, SurfaceFlags flags, SurfaceFormat format = SurfaceFormat.ARGB8888)
+        public Surface(Device gbmDev, uint width, uint height, SurfaceFlags flags, SurfaceFormat format = SurfaceFormat.ARGB8888)
         {
-            handle = gbm_surface_create(gbmDev.Handle, width, height, format, flags);
+            this.handler = gbm_surface_create(gbmDev.Handler, width, height, format, flags);
 
-            if (handle == IntPtr.Zero)
+            if (this.handler == IntPtr.Zero)
                 throw new NotSupportedException("[GBM] Failed to create GBM surface");
         }
+        public Surface(Device gbmDev, uint width, uint height, SurfaceFormat format, ulong modifier)
+        {
+            this.handler = gbm_surface_create_with_modifiers(gbmDev.Handler, width, height, format, &modifier, 1);
+
+            if (this.handler == IntPtr.Zero)
+                throw new NotSupportedException("[GBM] Failed to create GBM surface");
+        }
+
+
         #endregion
 
-        public bool HasFreeBuffers { get { return gbm_surface_has_free_buffers(handle) > 0; } }
+        public bool HasFreeBuffers { get { return gbm_surface_has_free_buffers(handler) > 0; } }
 
         public gbm_bo* Lock()
         {
-            gbm_bo* bo = gbm_surface_lock_front_buffer(handle);
+            gbm_bo* bo = gbm_surface_lock_front_buffer(handler);
             if (bo == null)
                 throw new Exception("[GBM]: Failed to lock front buffer.");
             return bo;
         }
         public void Release(gbm_bo* bo)
         {
-            gbm_surface_release_buffer(handle, bo);
+            gbm_surface_release_buffer(handler, bo);
         }
 
         #region IDisposable implementation
@@ -56,9 +70,9 @@ namespace GBM
         }
         protected virtual void Dispose(bool disposing)
         {
-            if (handle != IntPtr.Zero)
-                gbm_surface_destroy(handle);
-            handle = IntPtr.Zero;
+            if (handler != IntPtr.Zero)
+                gbm_surface_destroy(handler);
+            handler = IntPtr.Zero;
         }
         #endregion
     }

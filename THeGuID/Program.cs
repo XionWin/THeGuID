@@ -33,20 +33,25 @@ namespace THeGuID
 
             Console.WriteLine(drm.ToString());
 
-            var gbm = new GBM.Gbm(new GBM.Device(fd), drm.Crtc.Width, drm.Crtc.Height, GBM.Format.DRM_FORMAT_XRGB8888, GBM.FormatMod.DRM_FORMAT_MOD_LINEAR);
+            var gbm = new GBM.Gbm(new GBM.Device(fd), drm.Crtc.Width, drm.Crtc.Height, GBM.SurfaceFormat.XRGB8888, GBM.FormatMod.DRM_FORMAT_MOD_LINEAR);
 
             Console.WriteLine(gbm.ToString());
 
             var ctx = new EGL.Context(gbm, EGL.RenderableSurfaceType.OpenGLESV2);
-            
-
             Console.WriteLine($"GL Extensions: {GLESV2.GL.GetString(GLESV2.GLD.GL_EXTENSIONS)}");
             Console.WriteLine($"GL Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_VERSION)}");
             Console.WriteLine($"GL Sharding Language Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_SHADING_LANGUAGE_VERSION)}");
             Console.WriteLine($"GL Vendor: {GLESV2.GL.GetString(GLESV2.GLD.GL_VENDOR)}");
             Console.WriteLine($"GL Renderer: {GLESV2.GL.GetString(GLESV2.GLD.GL_RENDERER)}");
+            
+            MainLoop(ctx);
 
             Console.ReadLine();
+        }
+
+        static void MainLoop(EGL.Context ctx)
+        {
+            var b = EGL.Context.SwapBuffers(ctx.EglDisplay, ctx.EglSurface);
         }
     }
 

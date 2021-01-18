@@ -67,7 +67,7 @@ namespace GBM
         }
         public BufferObject(Device dev, uint _width, uint _height, SurfaceFormat format, SurfaceFlags flags)
         {
-            handle = gbm_bo_create(dev.Handle, _width, _height, format, flags);
+            handle = gbm_bo_create(dev.Handler, _width, _height, format, flags);
             if (handle == null)
                 throw new NotSupportedException("[GBM] BO creation failed.");
         }

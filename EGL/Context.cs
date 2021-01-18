@@ -281,6 +281,11 @@ namespace EGL
         // EGL_ANGLE_query_surface_pointer 
         [DllImport(Lib.Name, EntryPoint = "eglQuerySurfacePointerANGLE")]
         public static extern bool QuerySurfacePointerANGLE(EGLDisplay display, EGLSurface surface, int attribute, out nint value);
+
+        [DllImport(Lib.Name, EntryPoint = "eglSwapBuffers")]
+        public static extern bool SwapBuffers (EGLDisplay dpy, EGLSurface surface);
+
+
         // Returns true if Egl drivers exist on the system.
         public static bool IsSupported
         {
@@ -326,7 +331,7 @@ namespace EGL
             var handler = this.OffScreenExtensions.Contains("EGL_EXT_platform_base") ? 
                 (GetPlatformDisplayEXTHandler)Marshal.GetDelegateForFunctionPointer(GetProcAddress("eglGetPlatformDisplayEXT"), typeof(GetPlatformDisplayEXTHandler)) : null;
 
-            dpy = handler is null ? GetDisplay(gbm.GbmHandler) : handler(EGL_PLATFORM_GBM_KHR, gbm.GbmHandler, null);
+            dpy = handler is null ? GetDisplay(gbm.Device.Handler) : handler(EGL_PLATFORM_GBM_KHR, gbm.Device.Handler, null);
             
             if (dpy == IntPtr.Zero)
                 throw new NotSupportedException("[EGL] GetDisplay failed.: " + GetError());
@@ -365,7 +370,7 @@ namespace EGL
             if (ctx == IntPtr.Zero)
                 throw new NotSupportedException(String.Format("[EGL] Failed to create egl context, error {0}.", GetError()));
 
-            surface = eglCreateWindowSurface(dpy, currentCfg, gbm.SurfaceHandler, null);
+            surface = eglCreateWindowSurface(dpy, currentCfg, gbm.Surface.Handler, null);
 
             if (surface == IntPtr.Zero)
                 throw new NotSupportedException(String.Format("[EGL] Failed to create egl surface, error {0}.", GetError()));
