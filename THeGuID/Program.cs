@@ -40,11 +40,11 @@ namespace THeGuID
             var ctx = new EGL.Context(gbm, EGL.RenderableSurfaceType.OpenGLESV2);
             
 
-            Console.WriteLine($"GL Extensions: {GLESV2.GL.GetString(GLESV2.GL.GL_EXTENSIONS)}");
-            Console.WriteLine($"GL Version: {GLESV2.GL.GetString(GLESV2.GL.GL_VERSION)}");
-            Console.WriteLine($"GL Sharding Language Version: {GLESV2.GL.GetString(GLESV2.GL.GL_SHADING_LANGUAGE_VERSION)}");
-            Console.WriteLine($"GL Vendor: {GLESV2.GL.GetString(GLESV2.GL.GL_VENDOR)}");
-            Console.WriteLine($"GL Renderer: {GLESV2.GL.GetString(GLESV2.GL.GL_RENDERER)}");
+            Console.WriteLine($"GL Extensions: {GLESV2.GL.GetString(GLESV2.GLD.GL_EXTENSIONS)}");
+            Console.WriteLine($"GL Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_VERSION)}");
+            Console.WriteLine($"GL Sharding Language Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_SHADING_LANGUAGE_VERSION)}");
+            Console.WriteLine($"GL Vendor: {GLESV2.GL.GetString(GLESV2.GLD.GL_VENDOR)}");
+            Console.WriteLine($"GL Renderer: {GLESV2.GL.GetString(GLESV2.GLD.GL_RENDERER)}");
 
             Console.ReadLine();
         }
