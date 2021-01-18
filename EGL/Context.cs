@@ -349,7 +349,7 @@ namespace EGL
                 Egl.GREEN_SIZE, 8,
                 Egl.BLUE_SIZE, 8,
                 Egl.ALPHA_SIZE, 8,
-                Egl.STENCIL_SIZE, 0,
+                Egl.STENCIL_SIZE, 8,
                 Egl.SAMPLE_BUFFERS, 1,
                 Egl.SAMPLES, 4,
                 Egl.NONE
