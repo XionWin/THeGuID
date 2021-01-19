@@ -11,21 +11,21 @@ namespace GBM
     {
         nint device;
         public uint Width, Height;
+        public uint Stride;
         public SurfaceFormat Format;
-        public SurfaceFlags Flags;
 
-        public uint Handle32
+        public uint Handler
         {
             get { return (uint)BufferObject.gbm_bo_get_handle(ref this); }
-        }
-        public uint Stride
-        {
-            get { return BufferObject.gbm_bo_get_stride(ref this); }
-        }
+
+        public nint UserData => BufferObject.gbm_bo_get_user_data(ref this);
+
+        public int PanelCount => BufferObject.gbm_bo_get_plane_count(ref this);
         public void SetUserData(ref uint data, DestroyUserDataCallback destroyFB)
         {
             BufferObject.gbm_bo_set_user_data(ref this, ref data, destroyFB);
         }
+
     }
     unsafe public class BufferObject : IDisposable
     {
@@ -43,44 +43,47 @@ namespace GBM
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern ulong gbm_bo_get_handle(ref gbm_bo bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int gbm_bo_get_height(ref gbm_bo bo);
+        internal static extern uint gbm_bo_get_height(ref gbm_bo bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int gbm_bo_get_width(ref gbm_bo bo);
+        internal static extern uint gbm_bo_get_width(ref gbm_bo bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern uint gbm_bo_get_stride(ref gbm_bo bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void gbm_bo_set_user_data(ref gbm_bo bo, ref uint data, DestroyUserDataCallback callback);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern nint gbm_bo_get_user_data(nint bo);
+        internal static extern nint gbm_bo_get_user_data(ref gbm_bo bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern nint gbm_bo_map(ref gbm_bo bo, uint x, uint y, uint width, uint height, TransferFlags flags, ref uint stride, out nint data);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void gbm_bo_unmap(ref gbm_bo bo, nint data);
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int gbm_bo_get_plane_count(ref gbm_bo bo);
         #endregion
 
-        internal gbm_bo* handle;
+        internal gbm_bo *handler;
 
         #region ctor
         public BufferObject(gbm_bo* _handle)
         {
-            handle = _handle;
+            handler = _handle;
         }
         public BufferObject(Device dev, uint _width, uint _height, SurfaceFormat format, SurfaceFlags flags)
         {
-            handle = gbm_bo_create(dev.Handler, _width, _height, format, flags);
-            if (handle == null)
+            var handler = gbm_bo_create(dev.Handler, _width, _height, format, flags);
+            if (handler == null)
                 throw new NotSupportedException("[GBM] BO creation failed.");
         }
         #endregion
 
-        public uint Stride { get { return handle->Stride; } }
+
+        public uint Stride { get { return handler->Stride; } }
         public byte[] Data
         {
             set
             {
                 fixed (byte* pdata = value)
                 {
-                    gbm_bo_write(handle, (nint)pdata, value.Length);
+                    gbm_bo_write(handler, (nint)pdata, value.Length);
                 }
             }
         }
@@ -97,9 +100,9 @@ namespace GBM
         }
         protected virtual void Dispose(bool disposing)
         {
-            if (handle != null)
-                gbm_bo_destroy(handle);
-            handle = null;
+            if (handler != null)
+                gbm_bo_destroy(handler);
+            handler = null;
         }
         #endregion
     }

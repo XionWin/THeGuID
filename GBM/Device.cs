@@ -3,16 +3,13 @@ using System.Runtime.InteropServices;
 
 namespace GBM
 {
-    using GbmHandler = IntPtr;
-    using GbmSurfaceHandler = IntPtr;
     unsafe public class Device : IDisposable
     {
-
         #region pinvoke
         [DllImport(Lib.Name, EntryPoint = "gbm_create_device", CallingConvention = CallingConvention.Cdecl)]
-        static extern GbmHandler CreateDevice(int fd);
+        static extern nint CreateDevice(int fd);
         [DllImport(Lib.Name, EntryPoint = "gbm_device_destroy", CallingConvention = CallingConvention.Cdecl)]
-        static extern void DestroyDevice(GbmHandler gbm);
+        static extern void DestroyDevice(nint gbm);
         [DllImport(Lib.Name, EntryPoint = "gbm_device_get_fd", CallingConvention = CallingConvention.Cdecl)]
         static extern int DeviceGetFD(nint gbm);
         [DllImport(Lib.Name, EntryPoint = "gbm_device_is_format_supported", CallingConvention = CallingConvention.Cdecl)]
@@ -23,9 +20,9 @@ namespace GBM
         #endregion
 
         int fd_gpu;
-        GbmHandler handler;
+        nint handler;
 
-        public GbmHandler Handler => this.handler;
+        public nint Handler => this.handler;
 
         #region ctor
         public Device(int _fd_gpu)

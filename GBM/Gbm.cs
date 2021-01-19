@@ -13,7 +13,7 @@ namespace GBM
             this.Height = height;
             this.Format = format;
             this.Modifier = modifier;
-            this.Surface = new Surface(Device, width, height, format, modifier);
+            this.Surface = new Surface(Device, width, height, format, SurfaceFlags.Linear);
         }
 
         public Device Device { get; set; }

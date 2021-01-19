@@ -14,7 +14,7 @@ namespace GBM
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void gbm_surface_destroy(nint surface);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        static extern gbm_bo* gbm_surface_lock_front_buffer(nint surface);
+        public static extern gbm_bo* gbm_surface_lock_front_buffer(nint surface);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         static extern void gbm_surface_release_buffer(nint surface, gbm_bo* buffer);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
@@ -26,7 +26,7 @@ namespace GBM
         public nint Handler => this.handler;
 
         #region ctor
-        public Surface(Device gbmDev, uint width, uint height, SurfaceFlags flags, SurfaceFormat format = SurfaceFormat.ARGB8888)
+        public Surface(Device gbmDev, uint width, uint height, SurfaceFormat format, SurfaceFlags flags)
         {
             this.handler = gbm_surface_create(gbmDev.Handler, width, height, format, flags);
 
@@ -46,13 +46,14 @@ namespace GBM
 
         public bool HasFreeBuffers { get { return gbm_surface_has_free_buffers(handler) > 0; } }
 
-        public gbm_bo* Lock()
+        public GBM.gbm_bo* Lock()
         {
-            gbm_bo* bo = gbm_surface_lock_front_buffer(handler);
+            var bo = gbm_surface_lock_front_buffer(handler);
             if (bo == null)
                 throw new Exception("[GBM]: Failed to lock front buffer.");
             return bo;
         }
+
         public void Release(gbm_bo* bo)
         {
             gbm_surface_release_buffer(handler, bo);

@@ -44,14 +44,26 @@ namespace THeGuID
             Console.WriteLine($"GL Vendor: {GLESV2.GL.GetString(GLESV2.GLD.GL_VENDOR)}");
             Console.WriteLine($"GL Renderer: {GLESV2.GL.GetString(GLESV2.GLD.GL_RENDERER)}");
             
-            MainLoop(ctx);
+            MainLoop(gbm, ctx);
 
             Console.ReadLine();
         }
 
-        static void MainLoop(EGL.Context ctx)
+        static void MainLoop(GBM.Gbm gbm, EGL.Context ctx)
         {
             var b = EGL.Context.SwapBuffers(ctx.EglDisplay, ctx.EglSurface);
+
+            unsafe
+            {
+                var bo = gbm.Surface.Lock();
+                var userData = bo -> UserData;
+                var panelCount = bo -> PanelCount;
+                var width = bo -> Width;
+                var height = bo -> Height;
+                var format = bo -> Format;
+                var stride = bo -> Stride;
+
+            }
         }
     }
 
