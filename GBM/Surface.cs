@@ -46,12 +46,16 @@ namespace GBM
 
         public bool HasFreeBuffers { get { return gbm_surface_has_free_buffers(handler) > 0; } }
 
-        public GBM.gbm_bo* Lock()
+        public void Lock(Action<gbm_bo> action)
         {
-            var bo = gbm_surface_lock_front_buffer(handler);
-            if (bo == null)
-                throw new Exception("[GBM]: Failed to lock front buffer.");
-            return bo;
+            unsafe
+            {
+                var bo = gbm_surface_lock_front_buffer(handler);
+                if (bo == null)
+                    throw new Exception("[GBM]: Failed to lock front buffer.");
+                action?.Invoke(*bo);
+                this.Release(bo);
+            }
         }
 
         public void Release(gbm_bo* bo)

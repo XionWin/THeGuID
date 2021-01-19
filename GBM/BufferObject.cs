@@ -19,6 +19,9 @@ namespace GBM
         public nint UserData => BufferObject.gbm_bo_get_user_data(ref this);
 
         public int PanelCount => BufferObject.gbm_bo_get_plane_count(ref this);
+        public uint PanelStride(int panel) => BufferObject.gbm_bo_get_stride_for_plane(ref this, panel);
+        public uint PanelOffset(int panel) => BufferObject.gbm_bo_get_offset(ref this, panel);
+        public ulong Modifier => BufferObject.gbm_bo_get_modifier(ref this);
         public void SetUserData(ref uint data, DestroyUserDataCallback destroyFB)
         {
             BufferObject.gbm_bo_set_user_data(ref this, ref data, destroyFB);
@@ -46,6 +49,12 @@ namespace GBM
         internal static extern uint gbm_bo_get_width(ref gbm_bo bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern uint gbm_bo_get_stride(ref gbm_bo bo);
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern ulong gbm_bo_get_modifier(ref gbm_bo bo);
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern uint gbm_bo_get_stride_for_plane(ref gbm_bo bo, int plane);
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern uint gbm_bo_get_offset(ref gbm_bo bo, int plane);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void gbm_bo_set_user_data(ref gbm_bo bo, ref uint data, DestroyUserDataCallback callback);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]

@@ -43,7 +43,7 @@ namespace THeGuID
             Console.WriteLine($"GL Sharding Language Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_SHADING_LANGUAGE_VERSION)}");
             Console.WriteLine($"GL Vendor: {GLESV2.GL.GetString(GLESV2.GLD.GL_VENDOR)}");
             Console.WriteLine($"GL Renderer: {GLESV2.GL.GetString(GLESV2.GLD.GL_RENDERER)}");
-            
+
             MainLoop(gbm, ctx);
 
             Console.ReadLine();
@@ -53,17 +53,22 @@ namespace THeGuID
         {
             var b = EGL.Context.SwapBuffers(ctx.EglDisplay, ctx.EglSurface);
 
-            unsafe
+            gbm.Surface.Lock(bo =>
             {
-                var bo = gbm.Surface.Lock();
-                var userData = bo -> UserData;
-                var panelCount = bo -> PanelCount;
-                var width = bo -> Width;
-                var height = bo -> Height;
-                var format = bo -> Format;
-                var stride = bo -> Stride;
+                var userData = bo.UserData;
+                var panelCount = bo.PanelCount;
+                var width = bo.Width;
+                var height = bo.Height;
+                var format = bo.Format;
+                var stride = bo.Stride;
+                var modifier = bo.Modifier;
 
-            }
+                for (int i = 0; i < panelCount; i++)
+                {
+                    var s1 = bo.PanelStride(i);
+                    var offset = bo.PanelOffset(i);
+                }
+            });
         }
     }
 
