@@ -10,14 +10,12 @@ namespace GBM
     public struct gbm_bo
     {
         nint device;
-        public uint Width, Height;
+        public uint Width;
+        public uint Height;
         public uint Stride;
         public SurfaceFormat Format;
 
-        public uint Handler
-        {
-            get { return (uint)BufferObject.gbm_bo_get_handle(ref this); }
-
+        public uint Handler => (uint)BufferObject.gbm_bo_get_handle(ref this);
         public nint UserData => BufferObject.gbm_bo_get_user_data(ref this);
 
         public int PanelCount => BufferObject.gbm_bo_get_plane_count(ref this);
