@@ -53,14 +53,16 @@ namespace THeGuID
         {
             var b = EGL.Context.SwapBuffers(ctx.EglDisplay, ctx.EglSurface);
 
-            gbm.Surface.Lock(bo =>
+            gbm.Surface.Lock((bo) =>
             {
+
+
                 var userData = bo.UserData;
-                var panelCount = bo.PanelCount;
                 var width = bo.Width;
                 var height = bo.Height;
                 var format = bo.Format;
                 var stride = bo.Stride;
+                var panelCount = bo.PanelCount;
                 var modifier = bo.Modifier;
 
                 for (int i = 0; i < panelCount; i++)
@@ -68,6 +70,19 @@ namespace THeGuID
                     var s1 = bo.PanelStride(i);
                     var offset = bo.PanelOffset(i);
                 }
+
+
+                uint[] handlers = { bo.Handle, 0, 0, 0 };
+                uint[] strides = { bo.Stride, 0, 0, 0 };
+                uint[] offsets = { 0, 0, 0, 0 };
+
+                unsafe
+                { 
+                    uint fb_id = 0;
+                    var r = DRM.Native.AddFB2(gbm.Device.DeviceGetFD(), width, height, (uint)format, handlers, strides, offsets, &fb_id, 0);
+                    Console.WriteLine("[1111]" + r);
+                }
+
             });
         }
     }

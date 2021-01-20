@@ -80,7 +80,7 @@ namespace DRM
     }
     #endregion
 
-    public class Native
+    unsafe public class Native
     {
         #region PINVOKE
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
@@ -104,6 +104,17 @@ namespace DRM
         internal static extern int drmModeSetCursor2(int fd, uint crtcId, uint bo_handle, uint width, uint height, int hot_x, int hot_y);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int drmModeMoveCursor(int fd, uint crtcId, uint x, uint y);
+
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int drmModeAddFB2(int fd, uint width, uint height,
+			 uint pixel_format, uint[] bo_handles,
+			 uint[] pitches, uint[] offsets,
+			 uint *buf_id, uint flags);
         #endregion
+
+        public static bool AddFB2(int fd, uint width, uint height,
+			 uint pixel_format, uint[] bo_handles,
+			 uint[] pitches, uint[] offsets,
+			 uint *buf_id, uint flags) => drmModeAddFB2(fd, width, height, pixel_format, bo_handles, pitches, offsets, buf_id, flags) == 0;
     }
 }
