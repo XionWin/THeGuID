@@ -35,6 +35,8 @@ namespace GBM
         }
         #endregion
 
+        public int DeviceGetFD() => DeviceGetFD(this.handler);
+
         #region IDisposable implementation
         ~Device()
         {
