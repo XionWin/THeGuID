@@ -14,9 +14,9 @@ namespace GBM
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void gbm_surface_destroy(nint surface);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        public static extern gbm_bo *gbm_surface_lock_front_buffer(nint surface);
+        public static extern nint gbm_surface_lock_front_buffer(nint surface);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        static extern void gbm_surface_release_buffer(nint surface, gbm_bo* buffer);
+        static extern void gbm_surface_release_buffer(nint surface, nint buffer);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         static extern int gbm_surface_has_free_buffers(nint surface);
         #endregion
@@ -52,8 +52,7 @@ namespace GBM
             {
                 var handler = gbm_surface_lock_front_buffer(this.handler);
 
-
-                if (handler == null)
+                if (handler == IntPtr.Zero)
                     throw new Exception("[GBM]: Failed to lock front buffer.");
                 using(var bo = new BufferObject(handler))
                 {
@@ -62,7 +61,7 @@ namespace GBM
             }
         }
 
-        public void Release(gbm_bo* bo)
+        public void Release(nint bo)
         {
             gbm_surface_release_buffer(handler, bo);
         }

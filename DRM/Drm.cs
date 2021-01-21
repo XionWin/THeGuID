@@ -5,6 +5,17 @@ namespace DRM
 {
     public class Drm
     {
+        public Drm()
+        {
+        }
+        public int Fd { get; set; }
+        public Drm(int fd)
+        {
+            this.Fd = fd;
+        }
+
+        public ModeInfo Mode { get; set; }
+
         public Plane Plane { get; set; }
         
         public Crtc Crtc { get; set; }

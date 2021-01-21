@@ -2,6 +2,19 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "build_and_copy",
+            "command": "scp",
+            "type": "shell",
+            "args": [
+                "-r",
+                "${workspaceFolder}/THeGuID/bin/Debug/net5.0/*",
+                "pi@10.205.127.1:/home/pi/Documents/bin/THeGuID/"
+            ],
+            "dependsOn": [
+                "build",
+            ]
+        },
+        {
             "label": "build",
             "command": "dotnet",
             "type": "process",

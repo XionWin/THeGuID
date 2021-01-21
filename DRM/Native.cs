@@ -116,5 +116,11 @@ namespace DRM
 			 uint pixel_format, uint[] bo_handles,
 			 uint[] pitches, uint[] offsets,
 			 uint *buf_id, uint flags) => drmModeAddFB2(fd, width, height, pixel_format, bo_handles, pitches, offsets, buf_id, flags) == 0;
+    
+    
+        public static int SetCrtc
+        (int fd, uint crtcId, uint bufferId, uint x, uint y, uint* connectors, int count, ref ModeInfo mode) =>
+        drmModeSetCrtc(fd, crtcId, bufferId, x, y, connectors, count, ref mode);
+
     }
 }

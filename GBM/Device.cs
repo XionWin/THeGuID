@@ -11,7 +11,7 @@ namespace GBM
         [DllImport(Lib.Name, EntryPoint = "gbm_device_destroy", CallingConvention = CallingConvention.Cdecl)]
         static extern void DestroyDevice(nint gbm);
         [DllImport(Lib.Name, EntryPoint = "gbm_device_get_fd", CallingConvention = CallingConvention.Cdecl)]
-        static extern int DeviceGetFD(nint gbm);
+        static extern int gbm_device_get_fd(nint gbm);
         [DllImport(Lib.Name, EntryPoint = "gbm_device_is_format_supported", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool IsFormatSupported(nint gbm, SurfaceFormat format, SurfaceFlags usage);
@@ -35,7 +35,8 @@ namespace GBM
         }
         #endregion
 
-        public int DeviceGetFD() => DeviceGetFD(this.handler);
+        public int DeviceGetFD() => gbm_device_get_fd(this.handler);
+        public static int DeviceGetFD(nint device) => gbm_device_get_fd(device);
 
         #region IDisposable implementation
         ~Device()

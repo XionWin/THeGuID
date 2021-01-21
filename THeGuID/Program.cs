@@ -15,15 +15,15 @@ namespace THeGuID
 
         static void WndCreate()
         {
-            var deviceName = "/dev/dri/card0";
-            var drm = new DRM.Drm();
+            var deviceName = "/dev/dri/card1";
             var fd = Libc.Context.open(deviceName, Libc.OpenFlags.ReadWrite);
+            var drm = new DRM.Drm(fd);
             using (var resources = new DRM.Resources(fd))
             {
                 /* find a connected connector: */
                 drm.Connector = resources.Connectors.First(_ => _.State == DRM.ConnectionStatus.Connected);
                 /* find preferred mode or the highest resolution mode: */
-                var drmMode = drm.Connector.Modes.First(_ => _.type.BitwiseContains(DRM.DrmModeType.Preferred));
+                drm.Mode = drm.Connector.Modes.First(_ => _.type.BitwiseContains(DRM.DrmModeType.Preferred));
                 /* find encoder: */
                 var encoder = resources.Encoders.FirstOrDefault(_ => _.Id == drm.Connector.EncodeId);
 
@@ -44,45 +44,56 @@ namespace THeGuID
             Console.WriteLine($"GL Vendor: {GLESV2.GL.GetString(GLESV2.GLD.GL_VENDOR)}");
             Console.WriteLine($"GL Renderer: {GLESV2.GL.GetString(GLESV2.GLD.GL_RENDERER)}");
 
-            MainLoop(gbm, ctx);
+            MainLoop(drm, gbm, ctx);
 
             Console.ReadLine();
         }
 
-        static void MainLoop(GBM.Gbm gbm, EGL.Context ctx)
+        static void MainLoop(DRM.Drm drm, GBM.Gbm gbm, EGL.Context ctx)
         {
             var b = EGL.Context.SwapBuffers(ctx.EglDisplay, ctx.EglSurface);
 
             gbm.Surface.Lock((bo) =>
             {
-
-
                 var userData = bo.UserData;
+
                 var width = bo.Width;
                 var height = bo.Height;
                 var format = bo.Format;
-                var stride = bo.Stride;
-                var panelCount = bo.PanelCount;
                 var modifier = bo.Modifier;
 
+                var panelCount = bo.PanelCount;
+                var handle = bo.Handle;
+                Console.WriteLine($"userData: {userData}");
+                Console.WriteLine($"width: {width}");
+                Console.WriteLine($"height: {height}");
+                Console.WriteLine($"format: {format}");
+                Console.WriteLine($"modifier: {modifier}");
+                Console.WriteLine($"panelCount: {panelCount}");
+                Console.WriteLine($"handle: {handle}");
+
+
+                uint[] handles = { 0, 0, 0, 0 };
+                uint[] strides = { 0, 0, 0, 0 };
+                uint[] offsets = { 0, 0, 0, 0 };
                 for (int i = 0; i < panelCount; i++)
                 {
-                    var s1 = bo.PanelStride(i);
-                    var offset = bo.PanelOffset(i);
+                    strides[i] = bo.PanelStride(i);
+                    handles[i] = bo.PanelHandle(i);
+                    offsets[i] = bo.PanelOffset(i);
                 }
-
-
-                uint[] handlers = { bo.Handle, 0, 0, 0 };
-                uint[] strides = { bo.Stride, 0, 0, 0 };
-                uint[] offsets = { 0, 0, 0, 0 };
 
                 unsafe
-                { 
+                {
                     uint fb_id = 0;
-                    var r = DRM.Native.AddFB2(gbm.Device.DeviceGetFD(), width, height, (uint)format, handlers, strides, offsets, &fb_id, 0);
-                    Console.WriteLine("[1111]" + r);
+                    var r = DRM.Native.AddFB2(gbm.Device.DeviceGetFD(), width, height, (uint)format, handles, strides, offsets, &fb_id, 0);
+                    
+                    var drmConnectorId = drm.Connector.Id;
+                    var mode = drm.Mode;
+                    var rr = DRM.Native.SetCrtc(drm.Fd, drm.Crtc.Id, fb_id, 0, 0, &drmConnectorId, 1, ref mode);
                 }
 
+                Console.ReadLine();
             });
         }
     }
