@@ -91,9 +91,13 @@ namespace THeGuID
                     var drmConnectorId = drm.Connector.Id;
                     var mode = drm.Mode;
                     var rr = DRM.Native.SetCrtc(drm.Fd, drm.Crtc.Id, fb_id, 0, 0, &drmConnectorId, 1, ref mode);
+                    Console.WriteLine($"set crtc: {rr}");
                 }
-
-                Console.ReadLine();
+                
+                while(true)
+                {
+                    
+                }
             });
         }
     }
