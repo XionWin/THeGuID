@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace DRM
@@ -99,7 +101,7 @@ namespace DRM
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         static extern int drmModePageFlip(int fd, uint crtc_id, uint fb_id, PageFlipFlags flags, ref int user_data);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        unsafe static extern int drmModeSetCrtc(int fd, uint crtcId, uint bufferId, uint x, uint y, uint* connectors, int count, ref ModeInfo mode);
+        unsafe static extern int drmModeSetCrtc(int fd, uint crtcId, uint bufferId, uint x, uint y, [MarshalAs(UnmanagedType.LPArray)] uint[] connectors, int count, ref ModeInfo mode);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int drmModeSetCursor2(int fd, uint crtcId, uint bo_handle, uint width, uint height, int hot_x, int hot_y);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
@@ -112,15 +114,25 @@ namespace DRM
 			 uint *buf_id, uint flags);
         #endregion
 
-        public static bool AddFB2(int fd, uint width, uint height,
-			 uint pixel_format, uint[] bo_handles,
-			 uint[] pitches, uint[] offsets,
-			 uint *buf_id, uint flags) => drmModeAddFB2(fd, width, height, pixel_format, bo_handles, pitches, offsets, buf_id, flags) == 0;
+        public static uint GetFB2(int fd, uint width, uint height,
+			uint pixel_format, uint[] bo_handles,
+			uint[] pitches, uint[] offsets, uint flags)
+        {
+            uint bufId = 0;
+            if(drmModeAddFB2(fd, width, height, pixel_format, bo_handles, pitches, offsets, &bufId, flags) is var result && result == 0)
+            {
+                return bufId;
+            }
+            throw new NotSupportedException("[DRM] drmModeAddFB2 failed.");
+        }
     
     
-        public static int SetCrtc
-        (int fd, uint crtcId, uint bufferId, uint x, uint y, uint* connectors, int count, ref ModeInfo mode) =>
-        drmModeSetCrtc(fd, crtcId, bufferId, x, y, connectors, count, ref mode);
+        public static bool SetCrtc
+        (int fd, uint crtcId, uint bufferId, uint x, uint y, IEnumerable<uint> connectors, ModeInfo mode)
+        {
+            return drmModeSetCrtc(fd, crtcId, bufferId, x, y, connectors.ToArray(), connectors.Count(), ref mode)  == 0;
+        }
+        
 
     }
 }

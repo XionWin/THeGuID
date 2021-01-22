@@ -62,7 +62,7 @@ struct gbm_bo_handle
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern uint gbm_bo_get_offset(nint bo, int plane);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void gbm_bo_set_user_data(nint bo, ref uint data, DestroyUserDataCallback callback);
+        internal static extern void gbm_bo_set_user_data(nint bo, [MarshalAs(UnmanagedType.LPArray)] byte[] data, DestroyUserDataCallback callback);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         internal static extern nint gbm_bo_get_user_data(nint bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
@@ -103,8 +103,8 @@ struct gbm_bo_handle
         public uint PanelStride(int panel) => BufferObject.gbm_bo_get_stride_for_plane(this.boHandle, panel);
         public uint PanelOffset(int panel) => BufferObject.gbm_bo_get_offset(this.boHandle, panel);
         public ulong Modifier => BufferObject.gbm_bo_get_modifier(this.boHandle);
-        public void SetUserData(ref uint data, DestroyUserDataCallback destroyFB) =>
-            BufferObject.gbm_bo_set_user_data(this.boHandle, ref data, destroyFB);
+        public void SetUserData(byte[] data, DestroyUserDataCallback destroyFB) =>
+            BufferObject.gbm_bo_set_user_data(this.boHandle, data, destroyFB);
 
         public byte[] Data
         {

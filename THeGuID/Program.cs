@@ -73,9 +73,9 @@ namespace THeGuID
                 Console.WriteLine($"handle: {handle}");
 
 
-                uint[] handles = { 0, 0, 0, 0 };
-                uint[] strides = { 0, 0, 0, 0 };
-                uint[] offsets = { 0, 0, 0, 0 };
+                var handles = new uint[panelCount];
+                var strides = new uint[panelCount];
+                var offsets = new uint[panelCount];
                 for (int i = 0; i < panelCount; i++)
                 {
                     strides[i] = bo.PanelStride(i);
@@ -83,21 +83,13 @@ namespace THeGuID
                     offsets[i] = bo.PanelOffset(i);
                 }
 
-                unsafe
+                if(DRM.Native.GetFB2(gbm.Device.DeviceGetFD(), width, height, (uint)format, handles, strides, offsets, 0) is var fb)
                 {
-                    uint fb_id = 0;
-                    var r = DRM.Native.AddFB2(gbm.Device.DeviceGetFD(), width, height, (uint)format, handles, strides, offsets, &fb_id, 0);
-                    
-                    var drmConnectorId = drm.Connector.Id;
-                    var mode = drm.Mode;
-                    var rr = DRM.Native.SetCrtc(drm.Fd, drm.Crtc.Id, fb_id, 0, 0, &drmConnectorId, 1, ref mode);
-                    Console.WriteLine($"set crtc: {rr}");
+                    if(DRM.Native.SetCrtc(drm.Fd, drm.Crtc.Id, fb, 0, 0, new []{drm.Connector.Id}, drm.Mode) is var setCrtcResult)
+                    Console.WriteLine($"set crtc: {setCrtcResult}");
                 }
                 
-                while(true)
-                {
-                    
-                }
+                Console.ReadLine();
             });
         }
     }
