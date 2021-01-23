@@ -108,6 +108,11 @@ namespace GBM
         public void SetUserData(byte[] data, DestroyUserDataCallback destroyFB) =>
             BufferObject.gbm_bo_set_user_data(this.handle, data, destroyFB);
 
+        public void ReleaseBy(Surface surface)
+        {
+            surface.Release(this.handle);
+        }
+
         public byte[] Data
         {
             set

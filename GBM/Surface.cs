@@ -20,7 +20,7 @@ namespace GBM
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern gbm_bo *gbm_surface_lock_front_buffer(gbm_surface *surface);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        static extern void gbm_surface_release_buffer(gbm_surface *surface, nint buffer);
+        static extern void gbm_surface_release_buffer(gbm_surface *surface, gbm_bo *bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         static extern int gbm_surface_has_free_buffers(gbm_surface *surface);
         #endregion
@@ -62,7 +62,7 @@ namespace GBM
             }
         }
 
-        public void Release(nint bo)
+        public void Release(gbm_bo *bo)
         {
             gbm_surface_release_buffer(surfaceHandle, bo);
         }

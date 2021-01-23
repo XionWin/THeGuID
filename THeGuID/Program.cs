@@ -51,47 +51,62 @@ namespace THeGuID
 
         static void MainLoop(DRM.Drm drm, GBM.Gbm gbm, EGL.Context ctx)
         {
-            var b = EGL.Context.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface);
-            
-            using (var bo = gbm.Surface.Lock())
+            if (EGL.Context.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface))
             {
-                var userData = bo.UserData;
-
-                var width = bo.Width;
-                var height = bo.Height;
-                var format = bo.Format;
-                var modifier = bo.Modifier;
-
-                var panelCount = bo.PanelCount;
-                var handle = bo.Handle;
-                Console.WriteLine($"userData: {userData}");
-                Console.WriteLine($"width: {width}");
-                Console.WriteLine($"height: {height}");
-                Console.WriteLine($"format: {format}");
-                Console.WriteLine($"modifier: {modifier}");
-                Console.WriteLine($"panelCount: {panelCount}");
-                Console.WriteLine($"handle: {handle}");
-
-
-                var handles = new uint[panelCount];
-                var strides = new uint[panelCount];
-                var offsets = new uint[panelCount];
-                for (int i = 0; i < panelCount; i++)
+                using (var bo = gbm.Surface.Lock())
                 {
-                    strides[i] = bo.PanelStride(i);
-                    handles[i] = bo.PanelHandle(i);
-                    offsets[i] = bo.PanelOffset(i);
-                }
+                    var userData = bo.UserData;
 
-                if(DRM.Native.GetFB2(gbm.Device.DeviceGetFD(), width, height, (uint)format, handles, strides, offsets, 0) is var fb)
-                {
-                    if(DRM.Native.SetCrtc(drm.Fd, drm.Crtc.Id, fb, 0, 0, new []{drm.Connector.Id}, drm.Mode) is var setCrtcResult)
-                    Console.WriteLine($"set crtc: {setCrtcResult}");
-                }
+                    var width = bo.Width;
+                    var height = bo.Height;
+                    var format = bo.Format;
+                    var modifier = bo.Modifier;
 
-                Console.ReadLine();
+                    var panelCount = bo.PanelCount;
+                    var handle = bo.Handle;
+                    Console.WriteLine($"userData: {userData}");
+                    Console.WriteLine($"width: {width}");
+                    Console.WriteLine($"height: {height}");
+                    Console.WriteLine($"format: {format}");
+                    Console.WriteLine($"modifier: {modifier}");
+                    Console.WriteLine($"panelCount: {panelCount}");
+                    Console.WriteLine($"handle: {handle}");
+
+
+                    var handles = new uint[panelCount];
+                    var strides = new uint[panelCount];
+                    var offsets = new uint[panelCount];
+                    for (int i = 0; i < panelCount; i++)
+                    {
+                        strides[i] = bo.PanelStride(i);
+                        handles[i] = bo.PanelHandle(i);
+                        offsets[i] = bo.PanelOffset(i);
+                    }
+
+                    if (DRM.Native.GetFB2(gbm.Device.DeviceGetFD(), width, height, (uint)format, handles, strides, offsets, 0) is var fb)
+                    {
+                        if (DRM.Native.SetCrtc(drm.Fd, drm.Crtc.Id, fb, 0, 0, new[] { drm.Connector.Id }, drm.Mode) is var setCrtcResult)
+                            Console.WriteLine($"set crtc: {setCrtcResult}");
+                    }
+                }
             }
-            
+
+
+
+            while (true)
+            {
+                if (EGL.Context.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface))
+                {
+                    var bo = gbm.Surface.Lock();
+
+                    bo.ReleaseBy(gbm.Surface);
+
+                    System.Threading.Thread.Sleep(10);
+                }
+
+
+            }
+
         }
     }
 
