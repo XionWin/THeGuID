@@ -2,8 +2,6 @@ using System;
 
 namespace GBM
 {
-    using GbmHandler = IntPtr;
-    using GbmSurfaceHandler = IntPtr;
     public class Gbm
     {
         public Gbm(Device device, uint width, uint height, SurfaceFormat format, ulong modifier)

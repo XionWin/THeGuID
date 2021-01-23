@@ -331,7 +331,7 @@ namespace EGL
             var handler = this.OffScreenExtensions.Contains("EGL_EXT_platform_base") ? 
                 (GetPlatformDisplayEXTHandler)Marshal.GetDelegateForFunctionPointer(GetProcAddress("eglGetPlatformDisplayEXT"), typeof(GetPlatformDisplayEXTHandler)) : null;
 
-            dpy = handler is null ? GetDisplay(gbm.Device.Handler) : handler(EGL_PLATFORM_GBM_KHR, gbm.Device.Handler, null);
+            dpy = handler is null ? GetDisplay((nint)gbm.Device.Handle) : handler(EGL_PLATFORM_GBM_KHR, (nint)gbm.Device.Handle, null);
             
             if (dpy == IntPtr.Zero)
                 throw new NotSupportedException("[EGL] GetDisplay failed.: " + GetError());

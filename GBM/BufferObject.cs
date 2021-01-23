@@ -7,104 +7,106 @@ namespace GBM
     public delegate void DestroyUserDataCallback(nint bo, ref uint data);
 
 
-[StructLayout(LayoutKind.Explicit)]
-struct gbm_bo_handle
-{
-    [FieldOffset(0)]
-    public nint ptr;
+    [StructLayout(LayoutKind.Explicit)]
+    struct gbm_bo_handle
+    {
+        [FieldOffset(0)]
+        public nint ptr;
 
-    [FieldOffset(0)]
-    public int s32;
+        [FieldOffset(0)]
+        public int s32;
 
-    [FieldOffset(0)]
-    public uint u32;
+        [FieldOffset(0)]
+        public uint u32;
 
-    [FieldOffset(0)]
-    public long s64;
+        [FieldOffset(0)]
+        public long s64;
 
-    [FieldOffset(0)]
-    public ulong u64;
-}
+        [FieldOffset(0)]
+        public ulong u64;
+    }
 
+    public struct gbm_bo
+    {
+
+    }
 
     unsafe public class BufferObject : IDisposable
     {
         #region pinvoke
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern nint gbm_bo_create(nint gbm, uint width, uint height, SurfaceFormat format, SurfaceFlags flags);
+        internal static extern gbm_bo *gbm_bo_create(gbm_device *deviceHandle, uint width, uint height, SurfaceFormat format, SurfaceFlags flags);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void gbm_bo_destroy(nint bo);
-        [DllImport(Lib.Name, EntryPoint = "gbm_bo_destroy", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void destryBO(nint bo);
+        internal static extern void gbm_bo_destroy(gbm_bo *bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int gbm_bo_write(nint bo, nint buf, nint count);
+        internal static extern int gbm_bo_write(gbm_bo *bo, nint buf, nint count);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern nint gbm_bo_get_device(nint bo);
+        internal static extern nint gbm_bo_get_device(gbm_bo *bo);
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern gbm_bo_handle gbm_bo_get_handle_for_plane(nint bo, int plane);
+        internal static extern gbm_bo_handle gbm_bo_get_handle_for_plane(gbm_bo *bo, int plane);
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern gbm_bo_handle gbm_bo_get_handle(nint bo);
+        internal static extern gbm_bo_handle gbm_bo_get_handle(gbm_bo *bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern uint gbm_bo_get_height(nint bo);
+        internal static extern uint gbm_bo_get_height(gbm_bo *bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern uint gbm_bo_get_width(nint bo);
+        internal static extern uint gbm_bo_get_width(gbm_bo *bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern uint gbm_bo_get_stride(nint bo);
+        internal static extern uint gbm_bo_get_stride(gbm_bo *bo);
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern SurfaceFormat gbm_bo_get_format(nint bo);
+        internal static extern SurfaceFormat gbm_bo_get_format(gbm_bo *bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern ulong gbm_bo_get_modifier(nint bo);
+        internal static extern ulong gbm_bo_get_modifier(gbm_bo *bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern uint gbm_bo_get_stride_for_plane(nint bo, int plane);
+        internal static extern uint gbm_bo_get_stride_for_plane(gbm_bo *bo, int plane);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern uint gbm_bo_get_offset(nint bo, int plane);
+        internal static extern uint gbm_bo_get_offset(gbm_bo *bo, int plane);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void gbm_bo_set_user_data(nint bo, [MarshalAs(UnmanagedType.LPArray)] byte[] data, DestroyUserDataCallback callback);
+        internal static extern void gbm_bo_set_user_data(gbm_bo *bo, [MarshalAs(UnmanagedType.LPArray)] byte[] data, DestroyUserDataCallback callback);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern nint gbm_bo_get_user_data(nint bo);
+        internal static extern nint gbm_bo_get_user_data(gbm_bo *bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern nint gbm_bo_map(nint bo, uint x, uint y, uint width, uint height, TransferFlags flags, ref uint stride, out nint data);
+        internal static extern nint gbm_bo_map(gbm_bo *bo, uint x, uint y, uint width, uint height, TransferFlags flags, ref uint stride, out nint data);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void gbm_bo_unmap(nint bo, nint data);
+        internal static extern void gbm_bo_unmap(gbm_bo *bo, nint data);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int gbm_bo_get_plane_count(nint bo);
+        internal static extern int gbm_bo_get_plane_count(gbm_bo *bo);
         #endregion
 
-        internal nint boHandle;
+        internal gbm_bo *handle;
 
         #region ctor
-        public BufferObject(nint handle)
+        public BufferObject(gbm_bo *handle)
         {
-            boHandle = handle;
+            this.handle = handle;
         }
         public BufferObject(Device dev, uint _width, uint _height, SurfaceFormat format, SurfaceFlags flags)
         {
-            boHandle = gbm_bo_create(dev.Handler, _width, _height, format, flags);
-            if (boHandle == IntPtr.Zero)
+            handle = gbm_bo_create(dev.Handle, _width, _height, format, flags);
+            if (handle == null)
                 throw new NotSupportedException("[GBM] BO creation failed.");
         }
         #endregion
 
 
-        public uint Handle => BufferObject.gbm_bo_get_handle(this.boHandle).u32;
-        public uint PanelHandle(int panel) => BufferObject.gbm_bo_get_handle_for_plane(this.boHandle, panel).u32;
+        public uint Handle => BufferObject.gbm_bo_get_handle(this.handle).u32;
+        public uint PanelHandle(int panel) => BufferObject.gbm_bo_get_handle_for_plane(this.handle, panel).u32;
 
-        public nint Device => BufferObject.gbm_bo_get_device(this.boHandle);
-        public uint Width => BufferObject.gbm_bo_get_width(this.boHandle);
-        public uint Height => BufferObject.gbm_bo_get_height(this.boHandle);
-        public uint Stride => BufferObject.gbm_bo_get_stride(this.boHandle);
-        public SurfaceFormat Format => BufferObject.gbm_bo_get_format(this.boHandle);
-        public nint UserData => BufferObject.gbm_bo_get_user_data(this.boHandle);
+        public nint Device => BufferObject.gbm_bo_get_device(this.handle);
+        public uint Width => BufferObject.gbm_bo_get_width(this.handle);
+        public uint Height => BufferObject.gbm_bo_get_height(this.handle);
+        public uint Stride => BufferObject.gbm_bo_get_stride(this.handle);
+        public SurfaceFormat Format => BufferObject.gbm_bo_get_format(this.handle);
+        public nint UserData => BufferObject.gbm_bo_get_user_data(this.handle);
 
-        public int PanelCount => BufferObject.gbm_bo_get_plane_count(this.boHandle);
-        public uint PanelStride(int panel) => BufferObject.gbm_bo_get_stride_for_plane(this.boHandle, panel);
-        public uint PanelOffset(int panel) => BufferObject.gbm_bo_get_offset(this.boHandle, panel);
-        public ulong Modifier => BufferObject.gbm_bo_get_modifier(this.boHandle);
+        public int PanelCount => BufferObject.gbm_bo_get_plane_count(this.handle);
+        public uint PanelStride(int panel) => BufferObject.gbm_bo_get_stride_for_plane(this.handle, panel);
+        public uint PanelOffset(int panel) => BufferObject.gbm_bo_get_offset(this.handle, panel);
+        public ulong Modifier => BufferObject.gbm_bo_get_modifier(this.handle);
         public void SetUserData(byte[] data, DestroyUserDataCallback destroyFB) =>
-            BufferObject.gbm_bo_set_user_data(this.boHandle, data, destroyFB);
+            BufferObject.gbm_bo_set_user_data(this.handle, data, destroyFB);
 
         public byte[] Data
         {
@@ -112,7 +114,7 @@ struct gbm_bo_handle
             {
                 fixed (byte* pdata = value)
                 {
-                    gbm_bo_write(boHandle, (nint)pdata, value.Length);
+                    gbm_bo_write(handle, (nint)pdata, value.Length);
                 }
             }
         }
@@ -129,9 +131,9 @@ struct gbm_bo_handle
         }
         protected virtual void Dispose(bool disposing)
         {
-            if (boHandle != IntPtr.Zero)
-                gbm_bo_destroy(boHandle);
-            boHandle = 0;
+            if (handle != null)
+                gbm_bo_destroy(handle);
+            handle = null;
         }
         #endregion
     }

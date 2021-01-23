@@ -3,56 +3,60 @@ using System.Runtime.InteropServices;
 
 namespace GBM
 {
+    public struct gbm_surface
+    {
+
+    }
     unsafe public class Surface : IDisposable
     {
         #region pinvoke
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        static extern nint gbm_surface_create(nint gbm, uint width, uint height, SurfaceFormat format, SurfaceFlags flags);
+        static extern gbm_surface *gbm_surface_create(gbm_device *deviceHandle, uint width, uint height, SurfaceFormat format, SurfaceFlags flags);
 
         [DllImport(Lib.Name, EntryPoint = "gbm_surface_create_with_modifiers", CallingConvention = CallingConvention.Cdecl)]
-        static extern nint gbm_surface_create_with_modifiers(nint gbm, uint width, uint height, SurfaceFormat format, ulong* modifiers, uint count);
+        static extern gbm_surface *gbm_surface_create_with_modifiers(gbm_device *deviceHandle, uint width, uint height, SurfaceFormat format, ulong* modifiers, uint count);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void gbm_surface_destroy(nint surface);
+        internal static extern void gbm_surface_destroy(gbm_surface *surface);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nint gbm_surface_lock_front_buffer(nint surface);
+        public static extern gbm_bo *gbm_surface_lock_front_buffer(gbm_surface *surface);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        static extern void gbm_surface_release_buffer(nint surface, nint buffer);
+        static extern void gbm_surface_release_buffer(gbm_surface *surface, nint buffer);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        static extern int gbm_surface_has_free_buffers(nint surface);
+        static extern int gbm_surface_has_free_buffers(gbm_surface *surface);
         #endregion
 
-        private nint handler;
+        private gbm_surface *surfaceHandle;
 
-        public nint Handler => this.handler;
+        public nint Handler => (nint)this.surfaceHandle;
 
         #region ctor
         public Surface(Device gbmDev, uint width, uint height, SurfaceFormat format, SurfaceFlags flags)
         {
-            this.handler = gbm_surface_create(gbmDev.Handler, width, height, format, flags);
+            this.surfaceHandle = gbm_surface_create(gbmDev.Handle, width, height, format, flags);
 
-            if (this.handler == IntPtr.Zero)
+            if (this.surfaceHandle == null)
                 throw new NotSupportedException("[GBM] Failed to create GBM surface");
         }
         public Surface(Device gbmDev, uint width, uint height, SurfaceFormat format, ulong modifier)
         {
-            this.handler = gbm_surface_create_with_modifiers(gbmDev.Handler, width, height, format, &modifier, 1);
+            this.surfaceHandle = gbm_surface_create_with_modifiers(gbmDev.Handle, width, height, format, &modifier, 1);
 
-            if (this.handler == IntPtr.Zero)
+            if (this.surfaceHandle == null)
                 throw new NotSupportedException("[GBM] Failed to create GBM surface");
         }
 
 
         #endregion
 
-        public bool HasFreeBuffers { get { return gbm_surface_has_free_buffers(handler) > 0; } }
+        public bool HasFreeBuffers { get { return gbm_surface_has_free_buffers(surfaceHandle) > 0; } }
 
         public void Lock(Action<BufferObject> action)
         {
             unsafe
             {
-                var handler = gbm_surface_lock_front_buffer(this.handler);
+                var handler = gbm_surface_lock_front_buffer(this.surfaceHandle);
 
-                if (handler == IntPtr.Zero)
+                if (handler == null)
                     throw new Exception("[GBM]: Failed to lock front buffer.");
                 using(var bo = new BufferObject(handler))
                 {
@@ -63,7 +67,7 @@ namespace GBM
 
         public void Release(nint bo)
         {
-            gbm_surface_release_buffer(handler, bo);
+            gbm_surface_release_buffer(surfaceHandle, bo);
         }
 
         #region IDisposable implementation
@@ -78,9 +82,9 @@ namespace GBM
         }
         protected virtual void Dispose(bool disposing)
         {
-            if (handler != IntPtr.Zero)
-                gbm_surface_destroy(handler);
-            handler = IntPtr.Zero;
+            if (surfaceHandle != null)
+                gbm_surface_destroy(surfaceHandle);
+            surfaceHandle = null;
         }
         #endregion
     }

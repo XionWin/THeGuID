@@ -3,40 +3,46 @@ using System.Runtime.InteropServices;
 
 namespace GBM
 {
+    public struct gbm_device
+    {
+
+    }
+
     unsafe public class Device : IDisposable
     {
         #region pinvoke
-        [DllImport(Lib.Name, EntryPoint = "gbm_create_device", CallingConvention = CallingConvention.Cdecl)]
-        static extern nint CreateDevice(int fd);
-        [DllImport(Lib.Name, EntryPoint = "gbm_device_destroy", CallingConvention = CallingConvention.Cdecl)]
-        static extern void DestroyDevice(nint gbm);
-        [DllImport(Lib.Name, EntryPoint = "gbm_device_get_fd", CallingConvention = CallingConvention.Cdecl)]
-        static extern int gbm_device_get_fd(nint gbm);
-        [DllImport(Lib.Name, EntryPoint = "gbm_device_is_format_supported", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        static extern gbm_device *gbm_create_device(int fd);
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        static extern void gbm_device_destroy(gbm_device *devHandle);
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        static extern int gbm_device_get_fd(gbm_device *devHandle);
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool IsFormatSupported(nint gbm, SurfaceFormat format, SurfaceFlags usage);
-
+        static extern bool gbm_device_is_format_supported(gbm_device *devHandle, SurfaceFormat format, SurfaceFlags usage);
+        
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        static extern nint gbm_device_get_backend_name(gbm_device *devHandle);
 
         #endregion
 
-        int fd_gpu;
-        nint handler;
+        int gpu;
+        gbm_device *handle;
 
-        public nint Handler => this.handler;
+        public gbm_device *Handle => this.handle;
 
         #region ctor
-        public Device(int _fd_gpu)
+        public Device(int gpu)
         {
-            fd_gpu = _fd_gpu;
-            handler = CreateDevice(fd_gpu);
-
-            if (handler == IntPtr.Zero)
+            this.gpu = gpu;
+            handle = gbm_create_device(this.gpu);
+            if (handle == null)
                 throw new NotSupportedException("[GBM] device creation failed.");
         }
         #endregion
 
-        public int DeviceGetFD() => gbm_device_get_fd(this.handler);
-        public static int DeviceGetFD(nint device) => gbm_device_get_fd(device);
+        public int DeviceGetFD() => gbm_device_get_fd(this.handle);
+        public string BackendName => Marshal.PtrToStringAuto(gbm_device_get_backend_name(this.handle));
 
         #region IDisposable implementation
         ~Device()
@@ -50,9 +56,9 @@ namespace GBM
         }
         protected virtual void Dispose(bool disposing)
         {
-            if (handler != IntPtr.Zero)
-                DestroyDevice(handler);
-            handler = IntPtr.Zero;
+            if (handle != null)
+                gbm_device_destroy(handle);
+            handle = null;
         }
         #endregion
 
@@ -60,7 +66,7 @@ namespace GBM
 
         public override string ToString()
         {
-            return string.Format("[Device: Handler={0}, GPU FD={1}]", Handler, fd_gpu);
+            return string.Format("[Device: Handler={0}, GPU FD={1}]", (nint)handle, gpu);
         }
     }
 }
