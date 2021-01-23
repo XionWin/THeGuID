@@ -51,9 +51,9 @@ namespace THeGuID
 
         static void MainLoop(DRM.Drm drm, GBM.Gbm gbm, EGL.Context ctx)
         {
-            var b = EGL.Context.SwapBuffers(ctx.EglDisplay, ctx.EglSurface);
-
-            gbm.Surface.Lock((bo) =>
+            var b = EGL.Context.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface);
+            
+            using (var bo = gbm.Surface.Lock())
             {
                 var userData = bo.UserData;
 
@@ -88,9 +88,10 @@ namespace THeGuID
                     if(DRM.Native.SetCrtc(drm.Fd, drm.Crtc.Id, fb, 0, 0, new []{drm.Connector.Id}, drm.Mode) is var setCrtcResult)
                     Console.WriteLine($"set crtc: {setCrtcResult}");
                 }
-                
+
                 Console.ReadLine();
-            });
+            }
+            
         }
     }
 

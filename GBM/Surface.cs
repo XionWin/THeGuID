@@ -50,7 +50,7 @@ namespace GBM
 
         public bool HasFreeBuffers { get { return gbm_surface_has_free_buffers(surfaceHandle) > 0; } }
 
-        public void Lock(Action<BufferObject> action)
+        public BufferObject Lock()
         {
             unsafe
             {
@@ -58,10 +58,7 @@ namespace GBM
 
                 if (handler == null)
                     throw new Exception("[GBM]: Failed to lock front buffer.");
-                using(var bo = new BufferObject(handler))
-                {
-                    action?.Invoke(bo);
-                }
+                return new BufferObject(handler);
             }
         }
 

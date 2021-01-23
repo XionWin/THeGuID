@@ -192,98 +192,98 @@ namespace EGL
     {
         #region pinvoke
         [DllImport(Lib.Name, EntryPoint = "eglGetError")]
-        public static extern ErrorCode GetError();
+        public static extern ErrorCode eglGetError();
         [DllImport(Lib.Name, EntryPoint = "eglGetDisplay")]
-        public static extern EGLDisplay GetDisplay(EGLNativeDisplayType display_id);
+        public static extern EGLDisplay eglGetDisplay(EGLNativeDisplayType display_id);
         [DllImport(Lib.Name, EntryPoint = "eglInitialize")]
-        public static extern bool Initialize(EGLDisplay dpy, out int major, out int minor);
+        public static extern bool eglInitialize(EGLDisplay dpy, out int major, out int minor);
         [DllImport(Lib.Name, EntryPoint = "eglTerminate")]
-        public static extern bool Terminate(EGLDisplay dpy);
+        public static extern bool eglTerminate(EGLDisplay dpy);
         [DllImport(Lib.Name, EntryPoint = "eglQueryString")]
         private static extern nint eglQueryString(EGLDisplay dpy, int name);
         public static string QueryString(EGLDisplay dpy, int name) => Marshal.PtrToStringAuto(eglQueryString(dpy, name));
 
         [DllImport(Lib.Name, EntryPoint = "eglGetConfigs")]
-        [return: MarshalAsAttribute(UnmanagedType.I1)]
-        public static extern bool GetConfigs(EGLDisplay dpy, EGLConfig[] configs, int config_size, out int num_config);
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        public static extern bool eglGetConfigs(EGLDisplay dpy, EGLConfig[] configs, int config_size, out int num_config);
         [DllImport(Lib.Name, EntryPoint = "eglChooseConfig")]
-        [return: MarshalAsAttribute(UnmanagedType.I1)]
-        public static extern bool ChooseConfig(EGLDisplay dpy, int[] attrib_list, [In, Out] EGLConfig[] configs, int config_size, out int num_config);
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        public static extern bool eglChooseConfig(EGLDisplay dpy, int[] attrib_list, [In, Out] EGLConfig[] configs, int config_size, out int num_config);
         [DllImport(Lib.Name, EntryPoint = "eglGetConfigAttrib")]
-        [return: MarshalAsAttribute(UnmanagedType.I1)]
-        public static extern bool GetConfigAttrib(EGLDisplay dpy, EGLConfig config, int attribute, out int value);
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        public static extern bool eglGetConfigAttrib(EGLDisplay dpy, EGLConfig config, int attribute, out int value);
 
         [DllImport(Lib.Name, EntryPoint = "eglBindAPI")]
-        [return: MarshalAsAttribute(UnmanagedType.I1)]
-        public static extern bool BindAPI(RenderApi api);
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        public static extern bool eglBindAPI(RenderApi api);
         [DllImport(Lib.Name, EntryPoint = "eglQueryAPI")]
-        public static extern int QueryAPI();
+        public static extern int eglQueryAPI();
         [DllImport(Lib.Name, EntryPoint = "eglWaitClient")]
-        [return: MarshalAsAttribute(UnmanagedType.I1)]
-        public static extern bool WaitClient();
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        public static extern bool eglWaitClient();
         [DllImport(Lib.Name, EntryPoint = "eglReleaseThread")]
-        [return: MarshalAsAttribute(UnmanagedType.I1)]
-        public static extern bool ReleaseThread();
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        public static extern bool eglReleaseThread();
 
         [DllImport(Lib.Name, EntryPoint = "eglSwapInterval")]
-        [return: MarshalAsAttribute(UnmanagedType.I1)]
-        public static extern bool SwapInterval(EGLDisplay dpy, int interval);
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        public static extern bool eglSwapInterval(EGLDisplay dpy, int interval);
         [DllImport(Lib.Name, EntryPoint = "eglCreateContext")]
         static extern nint eglCreateContext(EGLDisplay dpy, EGLConfig config, EGLContext share_context, int[] attrib_list);
         public static EGLContext CreateContext(EGLDisplay dpy, EGLConfig config, EGLContext share_context, int[] attrib_list)
         {
             nint ptr = eglCreateContext(dpy, config, share_context, attrib_list);
             if (ptr == IntPtr.Zero)
-                throw new Exception(String.Format("Failed to create EGL context, error: {0}.", GetError()));
+                throw new Exception(String.Format("Failed to create EGL context, error: {0}.", eglGetError()));
             return ptr;
         }
         [DllImport(Lib.Name, EntryPoint = "eglDestroyContext")]
-        [return: MarshalAsAttribute(UnmanagedType.I1)]
-        public static extern bool DestroyContext(EGLDisplay dpy, EGLContext ctx);
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        public static extern bool eglDestroyContext(EGLDisplay dpy, EGLContext ctx);
         [DllImport(Lib.Name, EntryPoint = "eglMakeCurrent")]
-        [return: MarshalAsAttribute(UnmanagedType.I1)]
-        public static extern bool MakeCurrent(EGLDisplay dpy, EGLSurface draw, EGLSurface read, EGLContext ctx);
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        public static extern bool eglMakeCurrent(EGLDisplay dpy, EGLSurface draw, EGLSurface read, EGLContext ctx);
 
         [DllImport(Lib.Name, EntryPoint = "eglGetCurrentContext")]
-        public static extern EGLContext GetCurrentContext();
+        public static extern EGLContext eglGetCurrentContext();
         [DllImport(Lib.Name, EntryPoint = "eglGetCurrentSurface")]
-        public static extern EGLSurface GetCurrentSurface(int readdraw);
+        public static extern EGLSurface eglGetCurrentSurface(int readdraw);
         [DllImport(Lib.Name, EntryPoint = "eglGetCurrentDisplay")]
-        public static extern EGLDisplay GetCurrentDisplay();
+        public static extern EGLDisplay eglGetCurrentDisplay();
         [DllImport(Lib.Name, EntryPoint = "eglQueryContext")]
-        [return: MarshalAsAttribute(UnmanagedType.I1)]
-        public static extern bool QueryContext(EGLDisplay dpy, EGLContext ctx, int attribute, out int value);
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        public static extern bool eglQueryContext(EGLDisplay dpy, EGLContext ctx, int attribute, out int value);
         [DllImport(Lib.Name, EntryPoint = "eglWaitGL")]
-        [return: MarshalAsAttribute(UnmanagedType.I1)]
-        public static extern bool WaitGL();
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        public static extern bool eglWaitGL();
         [DllImport(Lib.Name, EntryPoint = "eglWaitNative")]
-        [return: MarshalAsAttribute(UnmanagedType.I1)]
-        public static extern bool WaitNative(int engine);
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        public static extern bool eglWaitNative(int engine);
         [DllImport(Lib.Name, EntryPoint = "eglCopyBuffers")]
         [return: MarshalAsAttribute(UnmanagedType.I1)]
         public static extern bool CopyBuffers(EGLDisplay dpy, EGLSurface surface, EGLNativePixmapType target);
         [DllImport(Lib.Name, EntryPoint = "eglGetProcAddress")]
-        public static extern nint GetProcAddress(string funcname);
+        public static extern nint eglGetProcAddress(string funcname);
         [DllImport(Lib.Name, EntryPoint = "eglGetProcAddress")]
-        public static extern nint GetProcAddress(nint funcname);
+        public static extern nint eglGetProcAddress(nint funcname);
 
-        [DllImport(Lib.Name, EntryPoint = "eglCreateWindowSurface")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern EGLSurface eglCreateWindowSurface(EGLDisplay dpy, EGLConfig config, EGLNativeWindowType native_window, int[] attrib_list);
 
         // EGL_EXT_platform_base
         [DllImport(Lib.Name, EntryPoint = "eglGetPlatformDisplayEXT")]
-        public static extern EGLDisplay GetPlatformDisplayEXT(int platform, EGLNativeDisplayType native_display, int[] attrib_list);
+        public static extern EGLDisplay eglGetPlatformDisplayEXT(int platform, EGLNativeDisplayType native_display, int[] attrib_list);
         [DllImport(Lib.Name, EntryPoint = "eglCreatePlatformWindowSurfaceEXT")]
-        public static extern EGLSurface CreatePlatformWindowSurfaceEXT(EGLDisplay dpy, EGLConfig config, EGLNativeWindowType native_window, int[] attrib_list);
+        public static extern EGLSurface eglCreatePlatformWindowSurfaceEXT(EGLDisplay dpy, EGLConfig config, EGLNativeWindowType native_window, int[] attrib_list);
         [DllImport(Lib.Name, EntryPoint = "eglCreatePlatformPixmapSurfaceEXT")]
-        public static extern EGLSurface CreatePlatformPixmapSurfaceEXT(EGLDisplay dpy, EGLConfig config, EGLNativePixmapType native_pixmap, int[] attrib_list);
+        public static extern EGLSurface eglCreatePlatformPixmapSurfaceEXT(EGLDisplay dpy, EGLConfig config, EGLNativePixmapType native_pixmap, int[] attrib_list);
 
         // EGL_ANGLE_query_surface_pointer 
         [DllImport(Lib.Name, EntryPoint = "eglQuerySurfacePointerANGLE")]
-        public static extern bool QuerySurfacePointerANGLE(EGLDisplay display, EGLSurface surface, int attribute, out nint value);
+        public static extern bool eglQuerySurfacePointerANGLE(EGLDisplay display, EGLSurface surface, int attribute, out nint value);
 
         [DllImport(Lib.Name, EntryPoint = "eglSwapBuffers")]
-        public static extern bool SwapBuffers (EGLDisplay dpy, EGLSurface surface);
+        public static extern bool eglSwapBuffers (EGLDisplay dpy, EGLSurface surface);
 
 
         // Returns true if Egl drivers exist on the system.
@@ -291,7 +291,7 @@ namespace EGL
         {
             get
             {
-                try { GetCurrentContext(); }
+                try { eglGetCurrentContext(); }
                 catch (Exception) { return false; }
                 return true;
             }
@@ -329,23 +329,22 @@ namespace EGL
             const uint EGL_PLATFORM_GBM_KHR = 0x31D7;
             
             var handler = this.OffScreenExtensions.Contains("EGL_EXT_platform_base") ? 
-                (GetPlatformDisplayEXTHandler)Marshal.GetDelegateForFunctionPointer(GetProcAddress("eglGetPlatformDisplayEXT"), typeof(GetPlatformDisplayEXTHandler)) : null;
+                (GetPlatformDisplayEXTHandler)Marshal.GetDelegateForFunctionPointer(eglGetProcAddress("eglGetPlatformDisplayEXT"), typeof(GetPlatformDisplayEXTHandler)) : null;
 
-            dpy = handler is null ? GetDisplay((nint)gbm.Device.Handle) : handler(EGL_PLATFORM_GBM_KHR, (nint)gbm.Device.Handle, null);
+            dpy = handler is null ? eglGetDisplay((nint)gbm.Device.Handle) : handler(EGL_PLATFORM_GBM_KHR, (nint)gbm.Device.Handle, null);
             
             if (dpy == IntPtr.Zero)
-                throw new NotSupportedException("[EGL] GetDisplay failed.: " + GetError());
+                throw new NotSupportedException("[EGL] GetDisplay failed.: " + eglGetError());
 
-            if (!Initialize(dpy, out major, out minor))
-                throw new NotSupportedException("[EGL] Failed to initialize EGL display. Error code: " + GetError());
+            if (!eglInitialize(dpy, out major, out minor))
+                throw new NotSupportedException("[EGL] Failed to initialize EGL display. Error code: " + eglGetError());
 
 
             var isModifiersSupported = this.Extensions.Contains("EGL_EXT_image_dma_buf_import_modifiers");
 
 
-            if (!BindAPI(RenderApi.GLES))
-                throw new NotSupportedException("[EGL] Failed to bind EGL Api: " + GetError());
-
+            if (!eglBindAPI(RenderApi.GLES))
+                throw new NotSupportedException("[EGL] Failed to bind EGL Api: " + eglGetError());
 
             var desiredConfig = new[] {
                 Egl.SURFACE_TYPE, (int)this.RenderableSurfaceType,
@@ -368,16 +367,16 @@ namespace EGL
             };
             ctx = CreateContext(dpy, currentCfg, IntPtr.Zero, contextAttrib);
             if (ctx == IntPtr.Zero)
-                throw new NotSupportedException(String.Format("[EGL] Failed to create egl context, error {0}.", GetError()));
+                throw new NotSupportedException(String.Format("[EGL] Failed to create egl context, error {0}.", eglGetError()));
 
             surface = eglCreateWindowSurface(dpy, currentCfg, gbm.Surface.Handler, null);
 
             if (surface == IntPtr.Zero)
-                throw new NotSupportedException(String.Format("[EGL] Failed to create egl surface, error {0}.", GetError()));
+                throw new NotSupportedException(String.Format("[EGL] Failed to create egl surface, error {0}.", eglGetError()));
 
-	        if(!MakeCurrent(dpy, surface, surface, ctx))
+	        if(!eglMakeCurrent(dpy, surface, surface, ctx))
             {
-                throw new NotSupportedException(String.Format("[EGL] Failed to make current, error {0}.", GetError()));
+                throw new NotSupportedException(String.Format("[EGL] Failed to make current, error {0}.", eglGetError()));
             }
         }
         #endregion
@@ -386,8 +385,8 @@ namespace EGL
         {
             int num_configs;
             var configs = new nint[1];
-            if (!ChooseConfig(dpy, desiredCfg, configs, 1, out num_configs) || num_configs < 1)
-                throw new NotSupportedException(String.Format("[EGL] Failed to retrieve GraphicsMode, error {0}", GetError()));
+            if (!eglChooseConfig(dpy, desiredCfg, configs, 1, out num_configs) || num_configs < 1)
+                throw new NotSupportedException(String.Format("[EGL] Failed to retrieve GraphicsMode, error {0}", eglGetError()));
             return configs[0];
         }
         public nint[] GetAllConfigs()
@@ -399,12 +398,12 @@ namespace EGL
                 Egl.NONE
             };
 
-            if (!ChooseConfig(dpy, desiredConfig, null, 0, out num_configs) || num_configs == 0)
-                throw new NotSupportedException(String.Format("[EGL] Failed to retrieve GraphicsMode, error {0}", GetError()));
+            if (!eglChooseConfig(dpy, desiredConfig, null, 0, out num_configs) || num_configs == 0)
+                throw new NotSupportedException(String.Format("[EGL] Failed to retrieve GraphicsMode, error {0}", eglGetError()));
 
             var configs = new nint[num_configs];
-            if (!ChooseConfig(dpy, null, configs, num_configs, out num_configs))
-                throw new NotSupportedException(String.Format("[EGL] Failed to retrieve GraphicsMode, error {0}", GetError()));
+            if (!eglChooseConfig(dpy, null, configs, num_configs, out num_configs))
+                throw new NotSupportedException(String.Format("[EGL] Failed to retrieve GraphicsMode, error {0}", eglGetError()));
             return configs;
         }
         public void DumpAllConf()
@@ -435,7 +434,7 @@ namespace EGL
                 for (int j = 0; j < attribs.Length; j++)
                 {
                     int value;
-                    GetConfigAttrib(dpy, conf, attribs[j], out value);
+                    eglGetConfigAttrib(dpy, conf, attribs[j], out value);
                     Console.Write((j == 0 ? string.Empty : ", ") + "{0} = {1}", EglConstToString((int)attribs[j]), value);
                 }
                 Console.Write("\n");
@@ -450,7 +449,7 @@ namespace EGL
         }
         public void ResetMakeCurrent()
         {
-            if (!Context.MakeCurrent(dpy, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero))
+            if (!Context.eglMakeCurrent(dpy, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero))
                 Console.WriteLine("egl clear current ctx failed");
         }
 
@@ -469,9 +468,9 @@ namespace EGL
             try
             {
                 if (ctx != IntPtr.Zero)
-                    DestroyContext(dpy, ctx);
+                    eglDestroyContext(dpy, ctx);
                 if (dpy != IntPtr.Zero)
-                    Terminate(dpy);
+                    eglTerminate(dpy);
             }
             catch (Exception ex)
             {
