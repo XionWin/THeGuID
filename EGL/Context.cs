@@ -191,44 +191,46 @@ namespace EGL
     unsafe public class Context : IDisposable
     {
         #region pinvoke
-        [DllImport(Lib.Name, EntryPoint = "eglGetError")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern ErrorCode eglGetError();
-        [DllImport(Lib.Name, EntryPoint = "eglGetDisplay")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern EGLDisplay eglGetDisplay(EGLNativeDisplayType display_id);
-        [DllImport(Lib.Name, EntryPoint = "eglInitialize")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglInitialize(EGLDisplay dpy, out int major, out int minor);
-        [DllImport(Lib.Name, EntryPoint = "eglTerminate")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglTerminate(EGLDisplay dpy);
-        [DllImport(Lib.Name, EntryPoint = "eglQueryString")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         private static extern nint eglQueryString(EGLDisplay dpy, int name);
         public static string QueryString(EGLDisplay dpy, int name) => Marshal.PtrToStringAuto(eglQueryString(dpy, name));
 
-        [DllImport(Lib.Name, EntryPoint = "eglGetConfigs")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglGetConfigs(EGLDisplay dpy, EGLConfig[] configs, int config_size, out int num_config);
-        [DllImport(Lib.Name, EntryPoint = "eglChooseConfig")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglChooseConfig(EGLDisplay dpy, int[] attrib_list, [In, Out] EGLConfig[] configs, int config_size, out int num_config);
-        [DllImport(Lib.Name, EntryPoint = "eglGetConfigAttrib")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglGetConfigAttrib(EGLDisplay dpy, EGLConfig config, int attribute, out int value);
 
-        [DllImport(Lib.Name, EntryPoint = "eglBindAPI")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglBindAPI(RenderApi api);
-        [DllImport(Lib.Name, EntryPoint = "eglQueryAPI")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern int eglQueryAPI();
-        [DllImport(Lib.Name, EntryPoint = "eglWaitClient")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglWaitClient();
-        [DllImport(Lib.Name, EntryPoint = "eglReleaseThread")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglReleaseThread();
 
-        [DllImport(Lib.Name, EntryPoint = "eglSwapInterval")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglSwapInterval(EGLDisplay dpy, int interval);
-        [DllImport(Lib.Name, EntryPoint = "eglCreateContext")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         static extern nint eglCreateContext(EGLDisplay dpy, EGLConfig config, EGLContext share_context, int[] attrib_list);
         public static EGLContext CreateContext(EGLDisplay dpy, EGLConfig config, EGLContext share_context, int[] attrib_list)
         {
@@ -237,52 +239,54 @@ namespace EGL
                 throw new Exception(String.Format("Failed to create EGL context, error: {0}.", eglGetError()));
             return ptr;
         }
-        [DllImport(Lib.Name, EntryPoint = "eglDestroyContext")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglDestroyContext(EGLDisplay dpy, EGLContext ctx);
-        [DllImport(Lib.Name, EntryPoint = "eglMakeCurrent")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglMakeCurrent(EGLDisplay dpy, EGLSurface draw, EGLSurface read, EGLContext ctx);
 
-        [DllImport(Lib.Name, EntryPoint = "eglGetCurrentContext")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern EGLContext eglGetCurrentContext();
-        [DllImport(Lib.Name, EntryPoint = "eglGetCurrentSurface")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern EGLSurface eglGetCurrentSurface(int readdraw);
-        [DllImport(Lib.Name, EntryPoint = "eglGetCurrentDisplay")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern EGLDisplay eglGetCurrentDisplay();
-        [DllImport(Lib.Name, EntryPoint = "eglQueryContext")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglQueryContext(EGLDisplay dpy, EGLContext ctx, int attribute, out int value);
-        [DllImport(Lib.Name, EntryPoint = "eglWaitGL")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglWaitGL();
-        [DllImport(Lib.Name, EntryPoint = "eglWaitNative")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglWaitNative(int engine);
-        [DllImport(Lib.Name, EntryPoint = "eglCopyBuffers")]
-        [return: MarshalAsAttribute(UnmanagedType.I1)]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool CopyBuffers(EGLDisplay dpy, EGLSurface surface, EGLNativePixmapType target);
-        [DllImport(Lib.Name, EntryPoint = "eglGetProcAddress")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern nint eglGetProcAddress(string funcname);
-        [DllImport(Lib.Name, EntryPoint = "eglGetProcAddress")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern nint eglGetProcAddress(nint funcname);
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern EGLSurface eglCreateWindowSurface(EGLDisplay dpy, EGLConfig config, EGLNativeWindowType native_window, int[] attrib_list);
 
         // EGL_EXT_platform_base
-        [DllImport(Lib.Name, EntryPoint = "eglGetPlatformDisplayEXT")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern EGLDisplay eglGetPlatformDisplayEXT(int platform, EGLNativeDisplayType native_display, int[] attrib_list);
-        [DllImport(Lib.Name, EntryPoint = "eglCreatePlatformWindowSurfaceEXT")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern EGLSurface eglCreatePlatformWindowSurfaceEXT(EGLDisplay dpy, EGLConfig config, EGLNativeWindowType native_window, int[] attrib_list);
-        [DllImport(Lib.Name, EntryPoint = "eglCreatePlatformPixmapSurfaceEXT")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern EGLSurface eglCreatePlatformPixmapSurfaceEXT(EGLDisplay dpy, EGLConfig config, EGLNativePixmapType native_pixmap, int[] attrib_list);
 
         // EGL_ANGLE_query_surface_pointer 
-        [DllImport(Lib.Name, EntryPoint = "eglQuerySurfacePointerANGLE")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglQuerySurfacePointerANGLE(EGLDisplay display, EGLSurface surface, int attribute, out nint value);
 
-        [DllImport(Lib.Name, EntryPoint = "eglSwapBuffers")]
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
         public static extern bool eglSwapBuffers (EGLDisplay dpy, EGLSurface surface);
 
 
