@@ -44,9 +44,9 @@ namespace THeGuID
             Console.WriteLine($"GL Vendor: {GLESV2.GL.GetString(GLESV2.GLD.GL_VENDOR)}");
             Console.WriteLine($"GL Renderer: {GLESV2.GL.GetString(GLESV2.GLD.GL_RENDERER)}");
 
-            MainLoop(drm, gbm, ctx);
+            GLESV2.GL.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
-            Console.ReadLine();
+            MainLoop(drm, gbm, ctx);
         }
 
         static void MainLoop(DRM.Drm drm, GBM.Gbm gbm, EGL.Context ctx)
@@ -89,6 +89,10 @@ namespace THeGuID
 
             while (true)
             {
+                
+                GLESV2.GL.glViewport(0, 0, (int)width, (int)height);
+                GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
+
                 if (EGL.Context.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface))
                 {
                     bo = gbm.Surface.Lock();
