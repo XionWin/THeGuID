@@ -31,7 +31,7 @@ namespace GBM
 
     }
 
-    unsafe public class BufferObject : IDisposable
+    unsafe public struct BufferObject
     {
         #region pinvoke
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
@@ -108,11 +108,6 @@ namespace GBM
         public void SetUserData(byte[] data, DestroyUserDataCallback destroyFB) =>
             BufferObject.gbm_bo_set_user_data(this.handle, data, destroyFB);
 
-        public void ReleaseBy(Surface surface)
-        {
-            surface.Release(this.handle);
-        }
-
         public byte[] Data
         {
             set
@@ -123,24 +118,6 @@ namespace GBM
                 }
             }
         }
-
-        #region IDisposable implementation
-        ~BufferObject()
-        {
-            Dispose(false);
-        }
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        protected virtual void Dispose(bool disposing)
-        {
-            if (handle != null)
-                gbm_bo_destroy(handle);
-            handle = null;
-        }
-        #endregion
     }
 }
 
