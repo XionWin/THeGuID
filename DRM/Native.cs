@@ -59,7 +59,8 @@ namespace DRM
         public int version;
         public nint vblank_handler;
         public nint page_flip_handler;
-        public static readonly int Version = 2;
+        public nint page_flip_handler2;
+        public nint sequence_handler;
     }
     [StructLayout(LayoutKind.Sequential)]
     unsafe public struct drmFrameBuffer
@@ -99,7 +100,8 @@ namespace DRM
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         unsafe internal static extern void drmModeFreeFB(drmFrameBuffer* ptr);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        static extern int drmModePageFlip(int fd, uint crtc_id, uint fb_id, PageFlipFlags flags, ref int user_data);
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        static extern bool drmModePageFlip(int fd, uint crtc_id, uint fb_id, PageFlipFlags flags, ref int user_data);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         unsafe static extern int drmModeSetCrtc(int fd, uint crtcId, uint bufferId, uint x, uint y, [MarshalAs(UnmanagedType.LPArray)] uint[] connectors, int count, ref ModeInfo mode);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
@@ -132,7 +134,13 @@ namespace DRM
         {
             return drmModeSetCrtc(fd, crtcId, bufferId, x, y, connectors.ToArray(), connectors.Count(), ref mode)  == 0;
         }
+
+        public static bool PageFlip(int fd, uint crtc_id, uint fb_id, PageFlipFlags flags, ref int user_data) =>
+            drmModePageFlip(fd, crtc_id, fb_id, flags, ref user_data);
         
+
+        public static int HandleEvent (int fd, ref EventContext evctx) =>
+            drmHandleEvent(fd, ref evctx);
 
     }
 }

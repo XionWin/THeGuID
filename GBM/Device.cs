@@ -19,7 +19,7 @@ namespace GBM
         static extern int gbm_device_get_fd(gbm_device *devHandle);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        static extern bool gbm_device_is_format_supported(gbm_device *devHandle, SurfaceFormat format, SurfaceFlags usage);
+        static extern bool gbm_device_is_format_supported(gbm_device *devHandle, SurfaceFormat format, SurfaceFlags flags);
         
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         static extern nint gbm_device_get_backend_name(gbm_device *devHandle);
@@ -43,6 +43,8 @@ namespace GBM
 
         public int DeviceGetFD() => gbm_device_get_fd(this.handle);
         public string BackendName => Marshal.PtrToStringAuto(gbm_device_get_backend_name(this.handle));
+
+        public bool IsSupportedFormat(SurfaceFormat format, SurfaceFlags flags) => gbm_device_is_format_supported(this.handle, format, flags);
 
         #region IDisposable implementation
         ~Device()

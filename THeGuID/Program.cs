@@ -6,6 +6,7 @@ namespace THeGuID
 {
     class Program
     {
+        public delegate void PageFilpHandler(int fd, uint frame, uint sec, uint usec, ref int data);
         static void Main(string[] args)
         {
             Console.WriteLine("The Grid. A digital frontier...");
@@ -33,7 +34,16 @@ namespace THeGuID
 
             Console.WriteLine(drm.ToString());
 
-            var gbm = new GBM.Gbm(new GBM.Device(fd), drm.Crtc.Width, drm.Crtc.Height, GBM.SurfaceFormat.XRGB8888, GBM.FormatMod.DRM_FORMAT_MOD_LINEAR);
+            var dev = new GBM.Device(fd);
+            foreach (GBM.SurfaceFormat format in Enum.GetValues(typeof(GBM.SurfaceFormat)))
+            {
+                if(dev.IsSupportedFormat(format, GBM.SurfaceFlags.Linear))
+                {
+                    Console.WriteLine(Enum.GetName(typeof(GBM.SurfaceFormat), format));
+                }
+            }
+
+            var gbm = new GBM.Gbm(new GBM.Device(fd), drm.Crtc.Width, drm.Crtc.Height, GBM.SurfaceFormat.ARGB8888, GBM.FormatMod.DRM_FORMAT_MOD_LINEAR);
 
             Console.WriteLine(gbm.ToString());
 
@@ -49,10 +59,10 @@ namespace THeGuID
             MainLoop(drm, gbm, ctx);
         }
 
-        static void MainLoop(DRM.Drm drm, GBM.Gbm gbm, EGL.Context ctx)
+        unsafe static void MainLoop(DRM.Drm drm, GBM.Gbm gbm, EGL.Context ctx)
         {
             EGL.Context.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface);
-            var bo = gbm.Surface.Lock();
+            var bo = gbm.Surface.Lock(() => {});
             var userData = bo.UserData;
 
             var width = bo.Width;
@@ -87,20 +97,39 @@ namespace THeGuID
                     Console.WriteLine($"set crtc: {setCrtcResult}");
             }
 
+
+            nint page_flip_handler = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(new PageFilpHandler(
+                (int fd, uint frame, uint sec, uint usec, ref int data) => {
+                    data = 0;
+                }
+            ));
+            var eventCtx = new DRM.EventContext(){version = 2, page_flip_handler = page_flip_handler };
+
+            GLESV2.GL.glViewport(0, 0, (int)width, (int)height);
+            var counter = 0u;
             while (true)
             {
-                
-                GLESV2.GL.glViewport(0, 0, (int)width, (int)height);
+                GLESV2.GL.glClearColor(counter / 1000f, 0.0f, 0.0f, 1.0f);
                 GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
+                counter += 10;
+                counter %= 1000;
 
                 if (EGL.Context.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface))
                 {
-                    bo = gbm.Surface.Lock();
+                    bo = gbm.Surface.Lock(() => {
+                        var waitingFlag = 1;
+                        DRM.Native.PageFlip(drm.Fd, drm.Crtc.Id, fb, DRM.PageFlipFlags.FlipEvent, ref waitingFlag);
+                        Console.WriteLine($"=={waitingFlag}");
+                        while(waitingFlag != 0)
+                        {
+                            Console.WriteLine($"=={waitingFlag}");
+                            DRM.Native.HandleEvent(drm.Fd, ref eventCtx);
+                        }
+                        Console.WriteLine($"=={waitingFlag}");
+                    });
+                    
 
 
-                    Console.WriteLine($"Loop: {DateTime.Now.Millisecond}");
-
-                    System.Threading.Thread.Sleep(10);
                 }
             }
 

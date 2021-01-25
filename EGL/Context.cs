@@ -382,6 +382,7 @@ namespace EGL
             {
                 throw new NotSupportedException(String.Format("[EGL] Failed to make current, error {0}.", eglGetError()));
             }
+
         }
         #endregion
 

@@ -22,7 +22,8 @@ namespace GBM
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         static extern void gbm_surface_release_buffer(gbm_surface *surface, gbm_bo *bo);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        static extern int gbm_surface_has_free_buffers(gbm_surface *surface);
+        [return: MarshalAsAttribute(UnmanagedType.Bool)]
+        static extern bool gbm_surface_has_free_buffers(gbm_surface *surface);
         #endregion
 
         private gbm_surface *surfaceHandle;
@@ -46,12 +47,11 @@ namespace GBM
                 throw new NotSupportedException("[GBM] Failed to create GBM surface");
         }
 
-
         #endregion
 
-        public bool HasFreeBuffers { get { return gbm_surface_has_free_buffers(surfaceHandle) > 0; } }
+        public bool HasFreeBuffers => gbm_surface_has_free_buffers(surfaceHandle);
 
-        public BufferObject Lock()
+        public BufferObject Lock(Action action)
         {
             unsafe
             {
@@ -60,6 +60,7 @@ namespace GBM
                 if (nextBo == null)
                     throw new Exception("[GBM]: Failed to lock front buffer.");
 
+                action?.Invoke();
                 if(this.boHandle is not null)
                 {
                     Release(this.boHandle);
