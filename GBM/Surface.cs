@@ -29,7 +29,7 @@ namespace GBM
         private gbm_surface *surfaceHandle;
         private gbm_bo *boHandle;
 
-        public nint Handler => (nint)this.surfaceHandle;
+        public nint Handle => (nint)this.surfaceHandle;
 
         #region ctor
         public Surface(Device gbmDev, uint width, uint height, SurfaceFormat format, SurfaceFlags flags)
@@ -50,23 +50,21 @@ namespace GBM
         #endregion
 
         public bool HasFreeBuffers => gbm_surface_has_free_buffers(surfaceHandle);
-
-        public BufferObject Lock(Action action)
+        public void Lock(Action<BufferObject> action)
         {
             unsafe
             {
-                var nextBo = gbm_surface_lock_front_buffer(this.surfaceHandle);
+                var lastBo = this.boHandle;
+                this.boHandle = gbm_surface_lock_front_buffer(this.surfaceHandle);
 
-                if (nextBo == null)
+                if (this.boHandle == null)
                     throw new Exception("[GBM]: Failed to lock front buffer.");
 
-                action?.Invoke();
-                if(this.boHandle is not null)
+                action?.Invoke(new BufferObject(this.boHandle));
+                if (lastBo is not null)
                 {
-                    Release(this.boHandle);
+                    this.Release(lastBo);
                 }
-                this.boHandle = nextBo;
-                return new BufferObject(this.boHandle);
             }
         }
 

@@ -373,7 +373,7 @@ namespace EGL
             if (ctx == IntPtr.Zero)
                 throw new NotSupportedException(String.Format("[EGL] Failed to create egl context, error {0}.", eglGetError()));
 
-            surface = eglCreateWindowSurface(dpy, currentCfg, gbm.Surface.Handler, null);
+            surface = eglCreateWindowSurface(dpy, currentCfg, gbm.Surface.Handle, null);
 
             if (surface == IntPtr.Zero)
                 throw new NotSupportedException(String.Format("[EGL] Failed to create egl surface, error {0}.", eglGetError()));
