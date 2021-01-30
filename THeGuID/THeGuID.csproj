@@ -7,7 +7,7 @@
   </PropertyGroup>
 
 
-   <ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Libc\Libc.csproj" />
     <ProjectReference Include="..\GBM\GBM.csproj" />
     <ProjectReference Include="..\DRM\DRM.csproj" />

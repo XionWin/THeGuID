@@ -120,6 +120,7 @@ namespace DRM
 			uint pixel_format, uint[] bo_handles,
 			uint[] pitches, uint[] offsets, uint flags)
         {
+            Console.WriteLine("Create FB");
             uint bufId = 0;
             if(drmModeAddFB2(fd, width, height, pixel_format, bo_handles, pitches, offsets, &bufId, flags) is var result && result == 0)
             {

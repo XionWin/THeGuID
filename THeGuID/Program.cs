@@ -10,12 +10,11 @@ namespace THeGuID
         static void Main(string[] args)
         {
             Console.WriteLine("The Grid. A digital frontier...");
-
             WndCreate();
         }
 
         static void WndCreate()
-        {
+        {  
             var deviceName = "/dev/dri/card1";
             var fd = Libc.Context.open(deviceName, Libc.OpenFlags.ReadWrite);
             var drm = new DRM.Drm(fd);
@@ -58,6 +57,10 @@ namespace THeGuID
             MainLoop(drm, gbm, ctx);
         }
 
+        Action<nint, nint> destroyUserDataCallbackFunc = (bo, data) => {
+
+        };
+
         unsafe static void MainLoop(DRM.Drm drm, GBM.Gbm gbm, EGL.Context ctx)
         {
             EGL.Context.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface);
@@ -91,12 +94,15 @@ namespace THeGuID
                     offsets[i] = bo.PanelOffset(i);
                 }
 
-                if (DRM.Native.GetFB2(gbm.Device.DeviceGetFD(), width, height, (uint)format, handles, strides, offsets, 0) is var fb)
+                if(bo.UserData is var fb && fb == IntPtr.Zero)
                 {
-                    if (DRM.Native.SetCrtc(drm.Fd, drm.Crtc.Id, fb, 0, 0, new[] { drm.Connector.Id }, drm.Mode) is var setCrtcResult)
+                    fb = (nint)DRM.Native.GetFB2(gbm.Device.DeviceGetFD(), width, height, (uint)format, handles, strides, offsets, 0);
+                    if (DRM.Native.SetCrtc(drm.Fd, drm.Crtc.Id, (uint)fb, 0, 0, new[] { drm.Connector.Id }, drm.Mode) is var setCrtcResult)
                         Console.WriteLine($"set crtc: {setCrtcResult}");
-                }
-                
+                    bo.SetUserData((nint)fb, new GBM.DestroyUserDataCallback((bo, data) => {
+
+                    }));
+                }                
                 GLESV2.GL.glViewport(0, 0, (int)width, (int)height);
 
             });
@@ -116,7 +122,7 @@ namespace THeGuID
                 var et = DateTime.Now;
                 var dt =  et - st;
                 st = et;
-                GLESV2.GL.glClearColor((DateTime.Now.Millisecond % 100 < 50) ? 0.0f : 1.0f, 0.0f, 0.0f, 1.0f);
+                GLESV2.GL.glClearColor((DateTime.Now.Millisecond % 100 < 50) ? 0.0f : 0.5f, 0.0f, 0.0f, 1.0f);
                 GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
 
                 if (EGL.Context.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface))
@@ -138,26 +144,38 @@ namespace THeGuID
                             handles[i] = bo.PanelHandle(i);
                             offsets[i] = bo.PanelOffset(i);
                         }
-                    
-                        if (DRM.Native.GetFB2(gbm.Device.DeviceGetFD(), width, height, (uint)format, handles, strides, offsets, 0) is var fb)
+
+                        if(bo.UserData is var fb && fb == IntPtr.Zero)
                         {
-                            var waitingFlag = 1;
-                            DRM.Native.PageFlip(drm.Fd, drm.Crtc.Id, fb, DRM.PageFlipFlags.FlipEvent, ref waitingFlag);
-                            while(waitingFlag != 0)
-                            {
-                                DRM.Native.HandleEvent(drm.Fd, ref eventCtx);
-                            }
+                            fb = (nint)DRM.Native.GetFB2(gbm.Device.DeviceGetFD(), width, height, (uint)format, handles, strides, offsets, 0);
+                            
+
+
+
+                            bo.SetUserData((nint)fb, new GBM.DestroyUserDataCallback((bo, data) => {
+
+                            }));
+                        }
+                    
+                        var waitingFlag = 1;
+                        DRM.Native.PageFlip(drm.Fd, drm.Crtc.Id, (uint)fb, DRM.PageFlipFlags.FlipEvent, ref waitingFlag);
+                        while(waitingFlag != 0)
+                        {
+                            DRM.Native.HandleEvent(drm.Fd, ref eventCtx);
                         }
                     });
                 }
 
                 frame ++;
                 totalTime += dt;
-                if(totalTime.TotalMilliseconds > 2000)
+                if(totalTime.TotalMilliseconds > 30 * 1000)
                 {
-                    Console.WriteLine($"{frame} frames rendered in {(float)totalTime.TotalMilliseconds / 1000:.##} seconds -> FPS={(float)frame / totalTime.TotalMilliseconds * 1000:.##}");
-                    frame = 0;
-                    totalTime = TimeSpan.Zero;
+                    using (var mproc = System.Diagnostics.Process.GetCurrentProcess())
+                    {
+                        Console.WriteLine($"[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")}]: {frame} frames rendered in {(float)totalTime.TotalMilliseconds / 1000:.##} seconds -> FPS={(float)frame / totalTime.TotalMilliseconds * 1000:.##}, memory used: {(double)mproc.WorkingSet64 / 1024 / 1024:.##}M, system memory used: {(double)mproc.PrivateMemorySize64 / 1024 / 1024:.##}M");
+                        frame = 0;
+                        totalTime = TimeSpan.Zero;
+                    }
                 }
             }
 

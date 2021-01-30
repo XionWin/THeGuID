@@ -32,6 +32,13 @@ namespace GBM
         public gbm_device *Handle => this.handle;
 
         #region ctor
+        public Device(gbm_device *handle)
+        {
+            if (handle == null)
+                throw new NotSupportedException("[GBM] device creation failed.");
+            this.handle = handle;
+            this.gpu = this.DeviceGetFD();
+        }
         public Device(int gpu)
         {
             this.gpu = gpu;
