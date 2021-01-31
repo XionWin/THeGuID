@@ -1,11 +1,13 @@
+using EGL.Definitions;
+
 namespace EGL
 {
     public enum RenderableSurfaceType: uint
     {
-        OpenGL = Egl.OPENGL_BIT,
-        OpenGLES = Egl.OPENGL_ES_BIT,
-        OpenGLESV2 = Egl.OPENGL_ES2_BIT,
-        OpenGLESV3 = Egl.OPENGL_ES3_BIT,
-        Window = Egl.WINDOW_BIT,
+        OpenGL = Definition.OPENGL_BIT,
+        OpenGLES = Definition.OPENGL_ES_BIT,
+        OpenGLESV2 = Definition.OPENGL_ES2_BIT,
+        OpenGLESV3 = Definition.OPENGL_ES3_BIT,
+        Window = Definition.WINDOW_BIT,
     }
 }

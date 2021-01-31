@@ -27,13 +27,16 @@ namespace GBM
         #endregion
 
         private gbm_surface *surfaceHandle;
-        private gbm_bo *boHandle;
 
         public nint Handle => (nint)this.surfaceHandle;
+
+
+        public Device Device { get; private set; }
 
         #region ctor
         public Surface(Device gbmDev, uint width, uint height, SurfaceFormat format, SurfaceFlags flags)
         {
+            this.Device = gbmDev;
             this.surfaceHandle = gbm_surface_create(gbmDev.Handle, width, height, format, flags);
 
             if (this.surfaceHandle == null)
@@ -41,6 +44,7 @@ namespace GBM
         }
         public Surface(Device gbmDev, uint width, uint height, SurfaceFormat format, ulong modifier)
         {
+            this.Device = gbmDev;
             this.surfaceHandle = gbm_surface_create_with_modifiers(gbmDev.Handle, width, height, format, &modifier, 1);
 
             if (this.surfaceHandle == null)
@@ -50,7 +54,37 @@ namespace GBM
         #endregion
 
         public bool HasFreeBuffers => gbm_surface_has_free_buffers(surfaceHandle);
-        public void Lock(Action<BufferObject> action)
+        private gbm_bo *boHandle;
+
+        private Action eglSwap;
+        public Surface RegisterSwapMethod(Action eglSwap)
+        {
+            this.eglSwap = eglSwap;
+            return this;
+        }
+
+        public Surface Init(Action<BufferObject, uint> action)
+        {
+            this.eglSwap();
+            this.Lock((bo, fb) => {
+                action(bo, fb);
+            });
+            return this;
+        }
+
+        public void SwapBuffers(Action renderAction, Action<BufferObject, uint> action)
+        {
+            while (true)
+            {
+                renderAction();
+                this.eglSwap();
+                this.Lock((bo, fb) => {
+                    action(bo, fb);
+                });
+            }
+        }
+
+        private void Lock(Action<BufferObject, uint> action)
         {
             unsafe
             {
@@ -59,14 +93,48 @@ namespace GBM
 
                 if (this.boHandle == null)
                     throw new Exception("[GBM]: Failed to lock front buffer.");
-
-                action?.Invoke(new BufferObject(this.boHandle));
+                
+                var bo = new BufferObject(this.boHandle);
+                action?.Invoke(bo, GetFb(bo));
                 if (lastBo is not null)
                 {
                     this.Release(lastBo);
                 }
             }
         }
+
+        private uint GetFb(BufferObject bo)
+        {
+            if(bo.UserData is var fb && fb == IntPtr.Zero)
+            {
+                var userData = bo.UserData;
+
+                var width = bo.Width;
+                var height = bo.Height;
+                var format = bo.Format;
+                var panelCount = bo.PanelCount;
+
+                var handles = new uint[panelCount];
+                var strides = new uint[panelCount];
+                var offsets = new uint[panelCount];
+                for (int i = 0; i < panelCount; i++)
+                {
+                    strides[i] = bo.PanelStride(i);
+                    handles[i] = bo.PanelHandle(i);
+                    offsets[i] = bo.PanelOffset(i);
+                }
+
+                fb = (nint)DRM.Native.GetFB2(this.Device.DeviceGetFD(), width, height, (uint)format, handles, strides, offsets, 0);
+                bo.SetUserData((nint)fb, new GBM.DestroyUserDataCallback(destroyUserDataCallbackFunc));
+            }
+            return (uint)fb;
+        }
+
+        
+
+        Action<nint, nint> destroyUserDataCallbackFunc = (bo, data) => {
+
+        };
 
         private void Release(gbm_bo *bo)
         {

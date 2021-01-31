@@ -94,7 +94,7 @@ namespace GBM
         public uint Handle => BufferObject.gbm_bo_get_handle(this.handle).u32;
         public uint PanelHandle(int panel) => BufferObject.gbm_bo_get_handle_for_plane(this.handle, panel).u32;
 
-        public GBM.Device Device => new Device(BufferObject.gbm_bo_get_device(this.handle));
+        public nint Device => (nint)BufferObject.gbm_bo_get_device(this.handle);
         public uint Width => BufferObject.gbm_bo_get_width(this.handle);
         public uint Height => BufferObject.gbm_bo_get_height(this.handle);
         public uint Stride => BufferObject.gbm_bo_get_stride(this.handle);

@@ -41,7 +41,7 @@ namespace THeGuID
                 }
             }
 
-            var gbm = new GBM.Gbm(new GBM.Device(fd), drm.Crtc.Width, drm.Crtc.Height, GBM.SurfaceFormat.ARGB8888, GBM.FormatMod.DRM_FORMAT_MOD_LINEAR);
+            var gbm = new GBM.Gbm(dev, drm.Crtc.Width, drm.Crtc.Height, GBM.SurfaceFormat.ARGB8888, GBM.FormatMod.DRM_FORMAT_MOD_LINEAR);
 
             Console.WriteLine(gbm.ToString());
 
@@ -57,56 +57,8 @@ namespace THeGuID
             MainLoop(drm, gbm, ctx);
         }
 
-        Action<nint, nint> destroyUserDataCallbackFunc = (bo, data) => {
-
-        };
-
         unsafe static void MainLoop(DRM.Drm drm, GBM.Gbm gbm, EGL.Context ctx)
         {
-            EGL.Context.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface);
-            gbm.Surface.Lock(bo => {
-                
-                var userData = bo.UserData;
-
-                var width = bo.Width;
-                var height = bo.Height;
-                var format = bo.Format;
-                var modifier = bo.Modifier;
-
-                var panelCount = bo.PanelCount;
-                var handle = bo.Handle;
-                Console.WriteLine($"userData: {userData}");
-                Console.WriteLine($"width: {width}");
-                Console.WriteLine($"height: {height}");
-                Console.WriteLine($"format: {format}");
-                Console.WriteLine($"modifier: {modifier}");
-                Console.WriteLine($"panelCount: {panelCount}");
-                Console.WriteLine($"handle: {handle}");
-
-
-                var handles = new uint[panelCount];
-                var strides = new uint[panelCount];
-                var offsets = new uint[panelCount];
-                for (int i = 0; i < panelCount; i++)
-                {
-                    strides[i] = bo.PanelStride(i);
-                    handles[i] = bo.PanelHandle(i);
-                    offsets[i] = bo.PanelOffset(i);
-                }
-
-                if(bo.UserData is var fb && fb == IntPtr.Zero)
-                {
-                    fb = (nint)DRM.Native.GetFB2(gbm.Device.DeviceGetFD(), width, height, (uint)format, handles, strides, offsets, 0);
-                    if (DRM.Native.SetCrtc(drm.Fd, drm.Crtc.Id, (uint)fb, 0, 0, new[] { drm.Connector.Id }, drm.Mode) is var setCrtcResult)
-                        Console.WriteLine($"set crtc: {setCrtcResult}");
-                    bo.SetUserData((nint)fb, new GBM.DestroyUserDataCallback((bo, data) => {
-
-                    }));
-                }                
-                GLESV2.GL.glViewport(0, 0, (int)width, (int)height);
-
-            });
-
             nint page_flip_handler = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(new PageFilpHandler(
                 (int fd, uint frame, uint sec, uint usec, ref int data) => {
                     data = 0;
@@ -117,68 +69,44 @@ namespace THeGuID
             var st = DateTime.Now;
             var frame = 0u;
             var totalTime = TimeSpan.Zero;
-            while (true)
-            {
-                var et = DateTime.Now;
-                var dt =  et - st;
-                st = et;
-                GLESV2.GL.glClearColor((DateTime.Now.Millisecond % 100 < 50) ? 0.0f : 0.5f, 0.0f, 0.0f, 1.0f);
-                GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
+            
+            gbm.Surface
+            .RegisterSwapMethod(() => EGL.Context.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface))
+            .Init((bo, fb) => {
+                if (DRM.Native.SetCrtc(drm.Fd, drm.Crtc.Id, (uint)fb, 0, 0, new[] { drm.Connector.Id }, drm.Mode) is var setCrtcResult)
+                    Console.WriteLine($"set crtc: {setCrtcResult}");
+                GLESV2.GL.glViewport(0, 0, (int)bo.Width, (int)bo.Height);
+            })
+            .SwapBuffers(
+                () => {
+                    GLESV2.GL.glClearColor((DateTime.Now.Millisecond % 100 < 50) ? 0.0f : 0.5f, 0.0f, 0.0f, 1.0f);
+                    GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
 
-                if (EGL.Context.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface))
-                {
-                    gbm.Surface.Lock(bo => {
-                        var userData = bo.UserData;
+                    var et = DateTime.Now;
+                    var dt =  et - st;
+                    st = et;
 
-                        var width = bo.Width;
-                        var height = bo.Height;
-                        var format = bo.Format;
-                        var panelCount = bo.PanelCount;
-
-                        var handles = new uint[panelCount];
-                        var strides = new uint[panelCount];
-                        var offsets = new uint[panelCount];
-                        for (int i = 0; i < panelCount; i++)
-                        {
-                            strides[i] = bo.PanelStride(i);
-                            handles[i] = bo.PanelHandle(i);
-                            offsets[i] = bo.PanelOffset(i);
-                        }
-
-                        if(bo.UserData is var fb && fb == IntPtr.Zero)
-                        {
-                            fb = (nint)DRM.Native.GetFB2(gbm.Device.DeviceGetFD(), width, height, (uint)format, handles, strides, offsets, 0);
-                            
-
-
-
-                            bo.SetUserData((nint)fb, new GBM.DestroyUserDataCallback((bo, data) => {
-
-                            }));
-                        }
-                    
-                        var waitingFlag = 1;
-                        DRM.Native.PageFlip(drm.Fd, drm.Crtc.Id, (uint)fb, DRM.PageFlipFlags.FlipEvent, ref waitingFlag);
-                        while(waitingFlag != 0)
-                        {
-                            DRM.Native.HandleEvent(drm.Fd, ref eventCtx);
-                        }
-                    });
-                }
-
-                frame ++;
-                totalTime += dt;
-                if(totalTime.TotalMilliseconds > 30 * 1000)
-                {
-                    using (var mproc = System.Diagnostics.Process.GetCurrentProcess())
+                    frame ++;
+                    totalTime += dt;
+                    if(totalTime.TotalMilliseconds > 30 * 1000)
                     {
-                        Console.WriteLine($"[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")}]: {frame} frames rendered in {(float)totalTime.TotalMilliseconds / 1000:.##} seconds -> FPS={(float)frame / totalTime.TotalMilliseconds * 1000:.##}, memory used: {(double)mproc.WorkingSet64 / 1024 / 1024:.##}M, system memory used: {(double)mproc.PrivateMemorySize64 / 1024 / 1024:.##}M");
-                        frame = 0;
-                        totalTime = TimeSpan.Zero;
+                        using (var mproc = System.Diagnostics.Process.GetCurrentProcess())
+                        {
+                            Console.WriteLine($"[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")}]: {frame} frames rendered in {(float)totalTime.TotalMilliseconds / 1000:.##} seconds -> FPS={(float)frame / totalTime.TotalMilliseconds * 1000:.##}, memory used: {(double)mproc.WorkingSet64 / 1024 / 1024:.##}M, system memory used: {(double)mproc.PrivateMemorySize64 / 1024 / 1024:.##}M");
+                            frame = 0;
+                            totalTime = TimeSpan.Zero;
+                        }
+                    }
+                },
+                (bo, fb) => {
+                    var waitingFlag = 1;
+                    DRM.Native.PageFlip(drm.Fd, drm.Crtc.Id, (uint)fb, DRM.PageFlipFlags.FlipEvent, ref waitingFlag);
+                    while(waitingFlag != 0)
+                    {
+                        DRM.Native.HandleEvent(drm.Fd, ref eventCtx);
                     }
                 }
-            }
-
+            );
         }
     }
 

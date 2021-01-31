@@ -8,12 +8,11 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\Libc\Libc.csproj" />
-    <ProjectReference Include="..\GBM\GBM.csproj" />
-    <ProjectReference Include="..\DRM\DRM.csproj" />
-    <ProjectReference Include="..\EGL\EGL.csproj" />
     <ProjectReference Include="..\Extension\Extension.csproj" />
-
+    <ProjectReference Include="..\Libc\Libc.csproj" />
+    <ProjectReference Include="..\DRM\DRM.csproj" />
+    <ProjectReference Include="..\GBM\GBM.csproj" />
+    <ProjectReference Include="..\EGL\EGL.csproj" />
     
     <ProjectReference Include="..\GLESV2\GLESV2.csproj" />
   </ItemGroup>
