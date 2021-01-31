@@ -71,7 +71,7 @@ namespace THeGuID
             var totalTime = TimeSpan.Zero;
             
             gbm.Surface
-            .RegisterSwapMethod(() => EGL.Context.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface))
+            .RegisterSwapMethod(() => EGL.Egl.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface))
             .Init((bo, fb) => {
                 if (DRM.Native.SetCrtc(drm.Fd, drm.Crtc.Id, (uint)fb, 0, 0, new[] { drm.Connector.Id }, drm.Mode) is var setCrtcResult)
                     Console.WriteLine($"set crtc: {setCrtcResult}");
