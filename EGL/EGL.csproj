@@ -6,6 +6,7 @@
   </PropertyGroup>
 
    <ItemGroup>
+    <ProjectReference Include="..\Extension\Extension.csproj" />
     <ProjectReference Include="..\Libc\Libc.csproj" />
     <ProjectReference Include="..\GBM\GBM.csproj" />
   </ItemGroup>
