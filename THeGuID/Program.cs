@@ -42,19 +42,20 @@ namespace THeGuID
             }
 
             var gbm = new GBM.Gbm(dev, drm.Crtc.Width, drm.Crtc.Height, GBM.SurfaceFormat.ARGB8888, GBM.FormatMod.DRM_FORMAT_MOD_LINEAR);
-
             Console.WriteLine(gbm.ToString());
 
-            var ctx = new EGL.Context(gbm, EGL.RenderableSurfaceType.OpenGLESV2);
-            Console.WriteLine($"GL Extensions: {GLESV2.GL.GetString(GLESV2.GLD.GL_EXTENSIONS)}");
-            Console.WriteLine($"GL Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_VERSION)}");
-            Console.WriteLine($"GL Sharding Language Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_SHADING_LANGUAGE_VERSION)}");
-            Console.WriteLine($"GL Vendor: {GLESV2.GL.GetString(GLESV2.GLD.GL_VENDOR)}");
-            Console.WriteLine($"GL Renderer: {GLESV2.GL.GetString(GLESV2.GLD.GL_RENDERER)}");
+            using (var ctx = new EGL.Context(gbm, EGL.RenderableSurfaceType.OpenGLESV2))
+            {
+                Console.WriteLine($"GL Extensions: {GLESV2.GL.GetString(GLESV2.GLD.GL_EXTENSIONS)}");
+                Console.WriteLine($"GL Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_VERSION)}");
+                Console.WriteLine($"GL Sharding Language Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_SHADING_LANGUAGE_VERSION)}");
+                Console.WriteLine($"GL Vendor: {GLESV2.GL.GetString(GLESV2.GLD.GL_VENDOR)}");
+                Console.WriteLine($"GL Renderer: {GLESV2.GL.GetString(GLESV2.GLD.GL_RENDERER)}");
 
-            GLESV2.GL.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+                GLESV2.GL.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
-            MainLoop(drm, gbm, ctx);
+                MainLoop(drm, gbm, ctx);
+            }
         }
 
         unsafe static void MainLoop(DRM.Drm drm, GBM.Gbm gbm, EGL.Context ctx)
@@ -70,6 +71,9 @@ namespace THeGuID
             var frame = 0u;
             var totalTime = TimeSpan.Zero;
             
+            
+            var color = new Color.Color(0.0d, 1.0d, 0.5d, 255);
+            
             gbm.Surface
             .RegisterSwapMethod(() => EGL.Egl.eglSwapBuffers(ctx.EglDisplay, ctx.EglSurface))
             .Init((bo, fb) => {
@@ -79,8 +83,11 @@ namespace THeGuID
             })
             .SwapBuffers(
                 () => {
-                    GLESV2.GL.glClearColor((DateTime.Now.Millisecond % 100 < 50) ? 0.0f : 0.5f, 0.0f, 0.0f, 1.0f);
+                    GLESV2.GL.glClearColor((float)color.R / 255, (float)color.G / 255, (float)color.B / 255, 0.2f);
                     GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
+                    color.H += 1;
+                    color.H %= 360;
+
 
                     var et = DateTime.Now;
                     var dt =  et - st;

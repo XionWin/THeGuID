@@ -129,23 +129,25 @@ namespace EGL
         {
             switch (cst)
             {
-                /*			not hex value: EGL_DONT_CARE                     ((EGLint)-1)
-                            not hex value: EGL_FALSE                         0
-                            not hex value: EGL_NO_CONTEXT                    ((EGLContext)0)
-                            not hex value: EGL_NO_DISPLAY                    ((EGLDisplay)0)
-                            not hex value: EGL_NO_SURFACE                    ((EGLSurface)0)
-                            not hex value: EGL_TRUE                          1
-                            not hex value: EGL_VERSION_1_1 1
-                            not hex value: EGL_VERSION_1_2 1
-                            not hex value: EGL_DISPLAY_SCALING               10000
-                            not hex value: EGL_UNKNOWN                       ((EGLint)-1)
-                            not hex value: EGL_VERSION_1_3 1
-                            not hex value: EGL_VERSION_1_4 1
-                            not hex value: EGL_DEFAULT_DISPLAY               ((EGLNativeDisplayType)0)
-                            not hex value: EGL_VERSION_1_5 1
-                            parsing error: EGL_FOREVER                       0xFFFFFFFFFFFFFFFFull
-                            not hex value: EGL_NO_SYNC                       ((EGLSync)0)
-                            not hex value: EGL_NO_IMAGE                      ((EGLImage)0)*/
+                /*
+                    not hex value: EGL_DONT_CARE                     ((EGLint)-1)
+                    not hex value: EGL_FALSE                         0
+                    not hex value: EGL_NO_CONTEXT                    ((EGLContext)0)
+                    not hex value: EGL_NO_DISPLAY                    ((EGLDisplay)0)
+                    not hex value: EGL_NO_SURFACE                    ((EGLSurface)0)
+                    not hex value: EGL_TRUE                          1
+                    not hex value: EGL_VERSION_1_1 1
+                    not hex value: EGL_VERSION_1_2 1
+                    not hex value: EGL_DISPLAY_SCALING               10000
+                    not hex value: EGL_UNKNOWN                       ((EGLint)-1)
+                    not hex value: EGL_VERSION_1_3 1
+                    not hex value: EGL_VERSION_1_4 1
+                    not hex value: EGL_DEFAULT_DISPLAY               ((EGLNativeDisplayType)0)
+                    not hex value: EGL_VERSION_1_5 1
+                    parsing error: EGL_FOREVER                       0xFFFFFFFFFFFFFFFFull
+                    not hex value: EGL_NO_SYNC                       ((EGLSync)0)
+                    not hex value: EGL_NO_IMAGE                      ((EGLImage)0)
+                */
                 case 1:
                     return "PBUFFER_BIT|OPENGL_ES_BIT|CONTEXT_OPENGL_CORE_PROFILE_BIT|SYNC_FLUSH_COMMANDS_BIT";
                 case 2:
