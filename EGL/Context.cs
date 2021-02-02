@@ -30,10 +30,6 @@ namespace EGL
 
         public RenderableSurfaceType RenderableSurfaceType { get; init; }
 
-
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate nint GetPlatformDisplayEXTHandler(uint platform, nint native_display, uint* attrib_list);
-
         #region ctor
         public Context(int fd, RenderableSurfaceType surfaceType)
         {

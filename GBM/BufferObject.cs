@@ -6,7 +6,6 @@ namespace GBM
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void DestroyUserDataCallback(nint bo, nint data);
 
-
     [StructLayout(LayoutKind.Explicit)]
     struct gbm_bo_handle
     {
@@ -25,7 +24,7 @@ namespace GBM
         [FieldOffset(0)]
         public ulong u64;
     }
-
+    
     public struct gbm_bo
     {
 

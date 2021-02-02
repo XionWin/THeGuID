@@ -31,10 +31,9 @@ namespace THeGuID
                 var color = new Color.Color(0.0d, 1.0d, 0.0d, 255);
                 var direction = true;
 
-
                 ctx.Render(() =>
                     {
-                        GLESV2.GL.glClearColor((float)color.R / 255, (float)color.G / 255, (float)color.B / 255, 1.0f);
+                        GLESV2.GL.glClearColor((float)color.R / 255, (float)color.G / 255, (float)color.B / 255, 0.25f);
                         GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
                         direction = color.L switch
                         {
