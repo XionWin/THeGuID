@@ -89,7 +89,6 @@ namespace GBM
         }
         #endregion
 
-
         public uint Handle => BufferObject.gbm_bo_get_handle(this.handle).u32;
         public uint PanelHandle(int panel) => BufferObject.gbm_bo_get_handle_for_plane(this.handle, panel).u32;
 

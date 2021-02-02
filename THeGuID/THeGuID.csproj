@@ -11,7 +11,6 @@
     <ProjectReference Include="..\Libc\Libc.csproj" />
     <ProjectReference Include="..\EGL\EGL.csproj" />
     <ProjectReference Include="..\GLESV2\GLESV2.csproj" />
-    <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 
 </Project>
