@@ -6,7 +6,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\Libc\Libc.csproj" />
     <ProjectReference Include="..\EGL\EGL.csproj" />
