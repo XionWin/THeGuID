@@ -12,7 +12,7 @@ namespace THeGuID
 
             var fd = Libc.Context.open("/dev/dri/card1", Libc.OpenFlags.ReadWrite);
 
-            using (var ctx = new EGL.Context(fd, EGL.RenderableSurfaceType.OpenGLESV2))
+            using (var ctx = new EGL.Context(fd, EGL.RenderableSurfaceType.OpenGLESV2) { IsVerticalSynchronization = true })
             {
                 Console.WriteLine($"GL Extensions: {GLESV2.GL.GetString(GLESV2.GLD.GL_EXTENSIONS)}");
                 Console.WriteLine($"GL Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_VERSION)}");
@@ -23,7 +23,6 @@ namespace THeGuID
                 GLESV2.GL.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
                 GLESV2.GL.glViewport(0, 0, ctx.Width, ctx.Height);
 
-
                 var st = DateTime.Now;
                 var frame = 0u;
                 var totalTime = TimeSpan.Zero;
@@ -33,7 +32,7 @@ namespace THeGuID
 
                 ctx.Render(() =>
                     {
-                        GLESV2.GL.glClearColor((float)color.R / 255, (float)color.G / 255, (float)color.B / 255, 0.25f);
+                        GLESV2.GL.glClearColor((float)color.R / 255, (float)color.G / 255, (float)color.B / 255, .25f);
                         GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
                         direction = color.L switch
                         {

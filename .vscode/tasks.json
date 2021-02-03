@@ -8,8 +8,8 @@
             "args": [
                 "-r",
                 "${workspaceFolder}/THeGuID/bin/Debug/net5.0/*",
-                // "pi@192.168.0.15:/home/pi/Documents/bin/THeGuID/"
-                "pi@10.205.127.1:/home/pi/Documents/bin/THeGuID/"
+                "pi@192.168.0.15:/home/pi/Documents/bin/THeGuID/"
+                // "pi@10.205.127.1:/home/pi/Documents/bin/THeGuID/"
             ],
             "dependsOn": [
                 "build",
