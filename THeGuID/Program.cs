@@ -32,7 +32,7 @@ namespace THeGuID
 
                 ctx.Render(() =>
                     {
-                        GLESV2.GL.glClearColor((float)color.R / 255, (float)color.G / 255, (float)color.B / 255, .25f);
+                        GLESV2.GL.glClearColor((float)color.R / 255, (float)color.G / 255, (float)color.B / 255, .15f);
                         GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
                         direction = color.L switch
                         {

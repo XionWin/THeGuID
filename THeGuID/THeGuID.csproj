@@ -7,9 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Libc\Libc.csproj" />
-    <ProjectReference Include="..\EGL\EGL.csproj" />
-    <ProjectReference Include="..\GLESV2\GLESV2.csproj" />
+    <ProjectReference Include="..\Infrastructure\Libc\Libc.csproj" />
+    <ProjectReference Include="..\Infrastructure\EGL\EGL.csproj" />
+    <ProjectReference Include="..\Infrastructure\GLESV2\GLESV2.csproj" />
+    <ProjectReference Include="..\Infrastructure\Extension\Extension.csproj" />
   </ItemGroup>
 
 </Project>

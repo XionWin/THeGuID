@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using System.Runtime.InteropServices;
-using EGL.Definitions;
 using Extension;
 
 namespace EGL
@@ -28,8 +26,7 @@ namespace EGL
         public int Minor { get; private set; }
 
         public bool IsVerticalSynchronization { get; set; }
-
-
+        
         public RenderableSurfaceType RenderableSurfaceType { get; init; }
 
         #region ctor
