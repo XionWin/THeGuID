@@ -1,2 +1,3 @@
 # THeGuID
-KMS/DRM context C# wrapper for the GLES renderer
+KMS/DRM C# wrapper for the GLES renderer
+2D graphic library(Developing) based on the GLES renderer.
