@@ -1,11 +1,10 @@
 using System;
 
-namespace THeGuID.Color
+namespace Graphic.Color
 {
-    public static class ColorExtension
+    public static class Extension
     {
-        public static void RgbToHsl(byte r, byte g, byte b,
-            out double h, out double s, out double l)
+        public static HSLA ToHSL(this RGBA rgb)
         {
             // Convert RGB to a 0.0 to 1.0 range.
             double double_r = r / 255.0;

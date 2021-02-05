@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Linq;
-using Extension;
+using Graphic.Drawing.Color;
 
 namespace THeGuID
 {
@@ -27,27 +26,27 @@ namespace THeGuID
                 var frame = 0u;
                 var totalTime = TimeSpan.Zero;
 
-                var color = new Color.Color(0.0d, 1.0d, 0.0d, 255);
+                var hsl = new Graphic.Drawing.Color.HSLA(0.0d, 1.0d, 0.0d, 255);
                 var direction = true;
-
                 ctx.Render(() =>
                     {
-                        GLESV2.GL.glClearColor((float)color.R / 255, (float)color.G / 255, (float)color.B / 255, .15f);
+                        var rgb = hsl.ToRGB();
+                        GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .8f);
                         GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
-                        direction = color.L switch
+                        direction = hsl.L switch
                         {
                             >= 0.5 => false,
                             <= 0 => true,
                             _ => direction,
                         };
-                        color.H += 2;
-                        if (color.H >= 360)
+                        hsl.H += 2;
+                        if (hsl.H >= 360)
                         {
-                            color.H = 0;
+                            hsl.H = 0;
                         }
-                        var stepValue = (float)color.H / 360 * 0.01;
-                        color.L += direction ? stepValue : -stepValue;
-                        color.L = Math.Min(Math.Max(color.L, 0), 0.5);
+                        var stepValue = (float)hsl.H / 360 * 0.01;
+                        hsl.L += direction ? stepValue : -stepValue;
+                        hsl.L = Math.Min(Math.Max(hsl.L, 0), 0.5);
 
                         var et = DateTime.Now;
                         var dt = et - st;

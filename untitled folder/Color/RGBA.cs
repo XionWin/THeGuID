@@ -1,6 +1,6 @@
 using System;
 
-namespace THeGuID.Color
+namespace Graphic.Color
 {
     public struct RGBA
     {
