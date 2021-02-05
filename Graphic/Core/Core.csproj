@@ -4,4 +4,9 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure\EGL\EGL.csproj" />
+    <ProjectReference Include="..\Infrastructure\GLESV2\GLESV2.csproj" />
+    <ProjectReference Include="..\Infrastructure\Extension\Extension.csproj" />
+  </ItemGroup>
 </Project>

@@ -25,7 +25,7 @@ namespace EGL
         public int Major { get; private set; }
         public int Minor { get; private set; }
 
-        public bool IsVerticalSynchronization { get; set; }
+        public bool VerticalSynchronization { get; set; }
         
         public RenderableSurfaceType RenderableSurfaceType { get; init; }
 
@@ -97,7 +97,7 @@ namespace EGL
                 renderFunc,
                 (bo, fb) =>
                 {
-                    if(this.IsVerticalSynchronization)
+                    if(this.VerticalSynchronization)
                     {
                         var waitingFlag = 1;
                         DRM.Native.PageFlip(this.Drm.Fd, this.Drm.Crtc.Id, (uint)fb, DRM.PageFlipFlags.FlipEvent, ref waitingFlag);
