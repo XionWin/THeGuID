@@ -28,6 +28,8 @@ namespace THeGuID
 
                 var hsl = new Graphic.Drawing.Color.HSLA(0.0d, 1.0d, 0.0d, 255);
                 var direction = true;
+
+                const double maxL = 1d;
                 ctx.Render(() =>
                     {
                         var rgb = hsl.ToRGB();
@@ -35,7 +37,7 @@ namespace THeGuID
                         GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
                         direction = hsl.L switch
                         {
-                            >= 0.5 => false,
+                            >= maxL => false,
                             <= 0 => true,
                             _ => direction,
                         };
@@ -46,7 +48,7 @@ namespace THeGuID
                         }
                         var stepValue = (float)hsl.H / 360 * 0.01;
                         hsl.L += direction ? stepValue : -stepValue;
-                        hsl.L = Math.Min(Math.Max(hsl.L, 0), 0.5);
+                        hsl.L = Math.Min(Math.Max(hsl.L, 0), maxL);
 
                         var et = DateTime.Now;
                         var dt = et - st;
@@ -67,8 +69,5 @@ namespace THeGuID
                 );
             }
         }
-
-
     }
-
 }
