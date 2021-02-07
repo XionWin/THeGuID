@@ -29,6 +29,8 @@ namespace THeGuID
                 var hsl = new Graphic.Drawing.Color.HSLA(0.0d, 1.0d, 0.0d, 255);
                 var direction = true;
 
+                new GLESV2.Shader.GfxShader(GLESV2.Shader.ShaderType.Vertex);
+
                 const double maxL = 1d;
                 ctx.Render(() =>
                     {

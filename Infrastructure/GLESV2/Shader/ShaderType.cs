@@ -1,8 +1,8 @@
 namespace GLESV2.Shader
 {
-    public enum ShaderType
+    public enum ShaderType: uint
     {
-        Vertex,
-        Fragment,
+        Vertex = GLD.GL_VERTEX_SHADER,
+        Fragment = GLD.GL_FRAGMENT_SHADER,
     }
 }

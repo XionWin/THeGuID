@@ -5,8 +5,8 @@ namespace GLESV2.Shader
 {
     public class GfxProgram
     {
-        public int Id { get; set; }
-        public GfxShader VertexShader { get; set; }
-        public GfxShader FragmentShader { get; set; }
+        public int Id { get; init; }
+        public GfxShader VertexShader { get; init; }
+        public GfxShader FragmentShader { get; init; }
     }
 }
