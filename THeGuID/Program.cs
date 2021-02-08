@@ -29,13 +29,14 @@ namespace THeGuID
                 var hsl = new Graphic.Drawing.Color.HSLA(0.0d, 1.0d, 0.0d, 255);
                 var direction = true;
 
-                new GLESV2.Shader.GfxShader(GLESV2.Shader.ShaderType.Vertex);
+                var vertexShader = GLESV2.Shader.GfxShader.Load(@"Shader/simplevertshader.glsl", GLESV2.Shader.ShaderType.Vertex);
+                var fragmentShader = GLESV2.Shader.GfxShader.Load(@"Shader/simplefragshader.glsl", GLESV2.Shader.ShaderType.Fragment);
 
                 const double maxL = 1d;
                 ctx.Render(() =>
                     {
                         var rgb = hsl.ToRGB();
-                        GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .8f);
+                        GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .2f);
                         GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
                         direction = hsl.L switch
                         {
