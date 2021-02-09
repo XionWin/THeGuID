@@ -17,14 +17,23 @@ namespace GLESV2
         public static extern void glClear(GLD mask);
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        public static extern uint glCreateShader(Shader.ShaderType shaderType);
+        public static extern uint glGetError();
+
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint glCreateProgram ();
+
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern uint glCreateShader(GFX.ShaderType shaderType);
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern void glShaderSource (uint shader, int count, string[] source, int len);
-
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void glCompileShader (uint shader);
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void glAttachShader (uint programId, uint shaderId);
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-         public static extern void glCompileShader (uint shader);
+        public static extern void glLinkProgram (uint programId);
 
     }
 }

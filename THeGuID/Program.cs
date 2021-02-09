@@ -29,8 +29,8 @@ namespace THeGuID
                 var hsl = new Graphic.Drawing.Color.HSLA(0.0d, 1.0d, 0.0d, 255);
                 var direction = true;
 
-                var vertexShader = GLESV2.Shader.GfxShader.Load(@"Shader/simplevertshader.glsl", GLESV2.Shader.ShaderType.Vertex);
-                var fragmentShader = GLESV2.Shader.GfxShader.Load(@"Shader/simplefragshader.glsl", GLESV2.Shader.ShaderType.Fragment);
+                var program = new GLESV2.GFX.GfxProgram(@"Shader/simplevertshader.glsl", @"Shader/simplefragshader.glsl");
+
 
                 const double maxL = 1d;
                 ctx.Render(() =>

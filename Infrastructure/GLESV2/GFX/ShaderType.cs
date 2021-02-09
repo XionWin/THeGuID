@@ -1,4 +1,4 @@
-namespace GLESV2.Shader
+namespace GLESV2.GFX
 {
     public enum ShaderType: uint
     {
