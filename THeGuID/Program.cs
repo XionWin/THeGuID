@@ -31,7 +31,6 @@ namespace THeGuID
 
                 var program = new GLESV2.GFX.GfxProgram(@"Shader/simplevertshader.glsl", @"Shader/simplefragshader.glsl");
 
-
                 const double maxL = 1d;
                 ctx.Render(() =>
                     {

@@ -4,9 +4,13 @@ using Extension;
 
 namespace GLESV2.GFX
 {
-    public class GfxObject
+    public abstract class GfxObject: IDisposable
     {
         public uint Id { get; init; }
+
+        protected abstract void Release();
+
+        public void Dispose() => this.Release();
     }
 
     static class GfxObjectExtension {

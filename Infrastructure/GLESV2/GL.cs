@@ -35,5 +35,32 @@ namespace GLESV2
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern void glLinkProgram (uint programId);
 
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void glDeleteShader (uint shaderId);
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void glGetShaderiv (uint shaderId, GLD pname, ref int value);
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void glGetShaderInfoLog (uint shaderId, int bufSize, int[] length, byte[] infoLog);
+        public static bool glGetShaderivCompiledStatus(uint shaderId)
+        {
+            var isCompiled = 0;
+            glGetShaderiv(shaderId, GLD.GL_COMPILE_STATUS, ref isCompiled);
+            return isCompiled == 1;
+        }
+
+        public static string glGetShaderivCompiledInformation(uint shaderId)
+        {
+            var len = 0;
+            glGetShaderiv(shaderId, GLD.GL_INFO_LOG_LENGTH, ref len);
+            string info = string.Empty;
+            if(len > 1)
+            {
+                var bs = new byte[len];
+                glGetShaderInfoLog(shaderId, len, null, bs);
+                info = System.Text.Encoding.ASCII.GetString(bs);
+            }
+            return info;
+        }
+
     }
 }
