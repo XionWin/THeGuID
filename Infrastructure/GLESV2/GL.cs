@@ -60,8 +60,6 @@ namespace GLESV2
             }
             return string.Empty;
         }
-
-
         
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern void glDeleteProgram(uint programId);

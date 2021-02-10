@@ -29,7 +29,10 @@ namespace THeGuID
                 var hsl = new Graphic.Drawing.Color.HSLA(0.0d, 1.0d, 0.0d, 255);
                 var direction = true;
 
-                var program = new GLESV2.GFX.GfxProgram(@"Shader/simplevertshader.glsl", @"Shader/simplefragshader.glsl");
+                using (var program = new GLESV2.GFX.GfxProgram(@"Shader/simplevertshader.glsl", @"Shader/simplefragshader.glsl"))
+                {
+                    
+                }
 
                 const double maxL = 1d;
                 ctx.Render(() =>
