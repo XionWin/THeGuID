@@ -31,11 +31,10 @@ namespace GLESV2.GFX
             return shader;
         }
 
-
         public static GfxShader CheckCompile(this GfxShader shader) {
-            if(!GL.glGetShaderivCompiledStatus(shader.Id))
+            if(!GL.glGetShaderCompiledStatus(shader))
             {
-                throw new GLESV2Exception(GL.glGetShaderivCompiledInformation(shader.Id));
+                throw new GLESV2Exception(GL.glGetShaderCompiledInformation(shader));
             }
             return shader;
         }

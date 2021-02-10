@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Extension;
-
 namespace GLESV2.GFX
 {
     public class GfxProgram: GfxObject
@@ -20,10 +16,7 @@ namespace GLESV2.GFX
             }
         }
 
-        protected override void Release()
-        {
-            
-        }
+        protected override void Release() => GL.glDeleteProgram(this.Id);
     }
 
     static class GfxProgramExtension {
@@ -33,6 +26,15 @@ namespace GLESV2.GFX
         }
         public static GfxProgram Link(this GfxProgram program) {
             GL.glLinkProgram(program.Id);
+            program.CheckLink();
+            return program;
+        }
+
+        public static GfxProgram CheckLink(this GfxProgram program) {
+            if(!GL.glGetProgramLinkedStatus(program))
+            {
+                throw new GLESV2Exception(GL.glGetProgramLinkedInformation(program));
+            }
             return program;
         }
     }

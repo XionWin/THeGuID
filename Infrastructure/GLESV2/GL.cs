@@ -41,25 +41,52 @@ namespace GLESV2
         private static extern void glGetShaderiv (uint shaderId, GLD pname, ref int value);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         private static extern void glGetShaderInfoLog (uint shaderId, int bufSize, int[] length, byte[] infoLog);
-        public static bool glGetShaderivCompiledStatus(uint shaderId)
+        public static bool glGetShaderCompiledStatus(GFX.GfxShader shader)
         {
             var isCompiled = 0;
-            glGetShaderiv(shaderId, GLD.GL_COMPILE_STATUS, ref isCompiled);
+            glGetShaderiv(shader.Id, GLD.GL_COMPILE_STATUS, ref isCompiled);
             return isCompiled == 1;
         }
 
-        public static string glGetShaderivCompiledInformation(uint shaderId)
+        public static string glGetShaderCompiledInformation(GFX.GfxShader shader)
         {
             var len = 0;
-            glGetShaderiv(shaderId, GLD.GL_INFO_LOG_LENGTH, ref len);
-            string info = string.Empty;
+            glGetShaderiv(shader.Id, GLD.GL_INFO_LOG_LENGTH, ref len);
             if(len > 1)
             {
                 var bs = new byte[len];
-                glGetShaderInfoLog(shaderId, len, null, bs);
-                info = System.Text.Encoding.ASCII.GetString(bs);
+                glGetShaderInfoLog(shader.Id, len, null, bs);
+                return System.Text.Encoding.ASCII.GetString(bs);
             }
-            return info;
+            return string.Empty;
+        }
+
+
+        
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void glDeleteProgram(uint programId);
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void glGetProgramiv (uint shaderId, GLD pname, ref int value);
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void glGetProgramInfoLog (uint shaderId, int bufSize, int[] length, byte[] infoLog);
+        public static bool glGetProgramLinkedStatus(GFX.GfxProgram program)
+        {
+            var isLinked = 0;
+            glGetProgramiv(program.Id, GLD.GL_LINK_STATUS, ref isLinked);
+            return isLinked == 1;
+        }
+
+        public static string glGetProgramLinkedInformation(GFX.GfxProgram program)
+        {
+            var len = 0;
+            glGetProgramiv(program.Id, GLD.GL_INFO_LOG_LENGTH, ref len);
+            if(len > 1)
+            {
+                var bs = new byte[len];
+                glGetProgramInfoLog(program.Id, len, null, bs);
+                return System.Text.Encoding.ASCII.GetString(bs);
+            }
+            return string.Empty;
         }
 
     }
