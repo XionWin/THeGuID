@@ -87,5 +87,26 @@ namespace GLESV2
             return string.Empty;
         }
 
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void glUseProgram(uint programId);
+
+        public static void glUseProgram(GFX.GfxProgram program) => glUseProgram(program.Id);
+
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void glVertexAttribPointer (uint index, int size, GLD type, bool normalized, uint stride, nint pointer);
+
+        public unsafe static void glVertexAttribPointerF(uint index, int size, bool normalized, uint stride, float[] data)
+        {
+            fixed(float *ptr = data)
+            {
+                glVertexAttribPointer(index, size, GLD.GL_FLOAT, normalized, stride, (nint)ptr);
+            }
+        }
+
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void glEnableVertexAttribArray (uint index);
+        
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void glDrawArrays(GLD mode, int first, uint count);
     }
 }

@@ -31,47 +31,64 @@ namespace THeGuID
 
                 using (var program = new GLESV2.GFX.GfxProgram(@"Shader/simplevertshader.glsl", @"Shader/simplefragshader.glsl"))
                 {
-                    
-                }
+                    GLESV2.GL.glClearColor(1f, 1f, 1f, .2f);
 
-                const double maxL = 1d;
-                ctx.Render(() =>
-                    {
-                        var rgb = hsl.ToRGB();
-                        GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .2f);
-                        GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
-                        direction = hsl.L switch
-                        {
-                            >= maxL => false,
-                            <= 0 => true,
-                            _ => direction,
-                        };
-                        hsl.H += 2;
-                        if (hsl.H >= 360)
-                        {
-                            hsl.H = 0;
-                        }
-                        var stepValue = (float)hsl.H / 360 * 0.01;
-                        hsl.L += direction ? stepValue : -stepValue;
-                        hsl.L = Math.Min(Math.Max(hsl.L, 0), maxL);
 
-                        var et = DateTime.Now;
-                        var dt = et - st;
-                        st = et;
-
-                        frame++;
-                        totalTime += dt;
-                        if (totalTime.TotalMilliseconds > 30 * 1000)
+                    const double maxL = 1d;
+                    var vVertices = new float[]{
+                        0.0f,  0.5f, 0.0f,
+                        -0.5f, -0.5f, 0.0f,
+                        0.5f, -0.5f, 0.0f
+                    };
+                    ctx.Render(() =>
                         {
-                            using (var mproc = System.Diagnostics.Process.GetCurrentProcess())
+                            var rgb = hsl.ToRGB();
+
+                            GLESV2.GL.glViewport(0, 0, ctx.Width, ctx.Height);
+
+                            GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .2f);
+
+                            GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
+
+                            GLESV2.GL.glUseProgram(program);
+
+                            GLESV2.GL.glVertexAttribPointerF(0, 3, false, 0, vVertices);
+                            GLESV2.GL.glEnableVertexAttribArray(0);
+                            GLESV2.GL.glDrawArrays(GLESV2.GLD.GL_TRIANGLES, 0, 3);
+
+                            direction = hsl.L switch
                             {
-                                Console.WriteLine($"[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")}]: {frame} frames rendered in {(float)totalTime.TotalMilliseconds / 1000:.##} seconds -> FPS={(float)frame / totalTime.TotalMilliseconds * 1000:.##}, memory used: {(double)mproc.WorkingSet64 / 1024 / 1024:.##}M, system memory used: {(double)mproc.PrivateMemorySize64 / 1024 / 1024:.##}M");
-                                frame = 0;
-                                totalTime = TimeSpan.Zero;
+                                >= maxL => false,
+                                <= 0 => true,
+                                _ => direction,
+                            };
+                            hsl.H += 2;
+                            if (hsl.H >= 360)
+                            {
+                                hsl.H = 0;
+                            }
+                            var stepValue = (float)hsl.H / 360 * 0.01;
+                            hsl.L += direction ? stepValue : -stepValue;
+                            hsl.L = Math.Min(Math.Max(hsl.L, 0), maxL);
+
+                            var et = DateTime.Now;
+                            var dt = et - st;
+                            st = et;
+
+                            frame++;
+                            totalTime += dt;
+                            if (totalTime.TotalMilliseconds > 30 * 1000)
+                            {
+                                using (var mproc = System.Diagnostics.Process.GetCurrentProcess())
+                                {
+                                    Console.WriteLine($"[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")}]: {frame} frames rendered in {(float)totalTime.TotalMilliseconds / 1000:.##} seconds -> FPS={(float)frame / totalTime.TotalMilliseconds * 1000:.##}, memory used: {(double)mproc.WorkingSet64 / 1024 / 1024:.##}M, system memory used: {(double)mproc.PrivateMemorySize64 / 1024 / 1024:.##}M");
+                                    frame = 0;
+                                    totalTime = TimeSpan.Zero;
+                                }
                             }
                         }
-                    }
-                );
+                    );
+                }
             }
         }
     }

@@ -30,9 +30,10 @@
 				"pipeProgram": "ssh",
 				"pipeArgs": [
 					"-T",
-                    "pi@192.168.0.15"
+                    // "pi@192.168.0.15"
                     // "pi@10.205.127.1"
                     // "pi@192.168.3.12"
+                    "pi@192.168.1.49"
 				],
 				"debuggerPath": "sudo ~/.vsdbg/vsdbg"
 			}
