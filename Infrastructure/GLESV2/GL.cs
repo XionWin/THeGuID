@@ -102,11 +102,44 @@ namespace GLESV2
                 glVertexAttribPointer(index, size, GLD.GL_FLOAT, normalized, stride, (nint)ptr);
             }
         }
+        public unsafe static void glVertexAttribPointerN(uint index, int size, bool normalized, uint stride, nint offset)
+        {
+            glVertexAttribPointer(index, size, GLD.GL_FLOAT, normalized, stride, (nint)offset);
+        }
+
+
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int glGetAttribLocation (uint programId, [MarshalAs(UnmanagedType.LPStr)]string name);
+        public static uint glGetAttribLocation (GFX.GfxProgram program, string name)
+        {
+            return glGetAttribLocation(program.Id, name) is var r && r >= 0 ? (uint)r : throw new GLESV2Exception();
+        }
+
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int glGetUniformLocation (uint programId, [MarshalAs(UnmanagedType.LPStr)]string name);
+        public static uint glGetUniformLocation (GFX.GfxProgram program, string name)
+        {
+            return glGetUniformLocation(program.Id, name) is var r && r >= 0 ? (uint)r : throw new GLESV2Exception();
+        }
+
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern void glEnableVertexAttribArray (uint index);
         
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern void glDrawArrays(GLD mode, int first, uint count);
+
+
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void glGenBuffers (uint n, ref uint bufferId);
+
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void glBindBuffer (GLD target, uint bufferId);
+
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void glBufferData (GLD target, int size, nint data, GLD usage);
+
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void glUniformMatrix4fv (uint location, uint count, [MarshalAs(UnmanagedType.Bool)]bool transpose, float[] value);
     }
 }
