@@ -74,7 +74,7 @@ namespace EGL
             return gbm;
         }
 
-        public void Render(Action renderFunc)
+        public void Render(Action initFunc, Action renderFunc)
         {
             nint page_flip_handler = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(new PageFilpHandler(
                 (int fd, uint frame, uint sec, uint usec, ref int data) =>
@@ -92,6 +92,7 @@ namespace EGL
                     Console.WriteLine($"set crtc: {setCrtcResult}");
                 this.Width = (int)bo.Width;
                 this.Height = (int)bo.Height;
+                initFunc?.Invoke();
             })
             .SwapBuffers(
                 renderFunc,

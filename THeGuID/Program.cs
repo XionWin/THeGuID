@@ -108,18 +108,16 @@ namespace THeGuID
                     var proj_mat_location = GLESV2.GL.glGetUniformLocation(program, "proj_mat");
                     var model_mat_location = GLESV2.GL.glGetUniformLocation(program, "model_mat");
                     
-                    Resize(ctx.Width, ctx.Height, proj_mat_location);
-
-                    ctx.Render(() =>
-                        {
-                            var rgb = hsl.ToRGB();
-
+                    ctx.Render(
+                        () => {
                             Resize(ctx.Width, ctx.Height, proj_mat_location);
+                        },
+                        () => {
+                            var rgb = hsl.ToRGB();
 
                             GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .3f);
 
                             GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
-
 
 			                SetRotationMatrix((DateTime.Now.Second * 1000.0 + DateTime.Now.Millisecond) / 1000.0 * Math.PI / 2.0, model_mat_location);
                             GLESV2.GL.glDrawArrays(GLESV2.GLD.GL_TRIANGLE_FAN, 0, size);
@@ -194,38 +192,38 @@ namespace THeGuID
             // set orthogonal view so that coordinates [-1, 1] area always visible and proportional on x and y axis
             if (w > h)
             {
-                float f = w / (float)h;
+                double f = w / (double)h;
                 SetOrthoMatrix(-f, f, -1, 1, -1, 1, proj_mat_location);
             }
             else
             {
-                float f = h / (float)w;
+                double f = h / (double)w;
                 SetOrthoMatrix(-1, 1, -f, f, -1, 1, proj_mat_location);
             }
         }
-        private static void SetOrthoMatrix(float left, float right, float bottom,
-					float top, float n, float f, uint proj_mat_location)
+        private static void SetOrthoMatrix(double left, double right, double bottom,
+					double top, double n, double f, uint proj_mat_location)
         {
             // set orthogonal matrix
             var mat = new float[16];
-            mat[0] = 2.0f / (right - left);
+            mat[0] = (float)(2.0 / (right - left));
             mat[1] = .0f;
             mat[2] = .0f;
             mat[3] = .0f;
 
             mat[4] = .0f;
-            mat[5] = 2.0f / (top - bottom);
+            mat[5] = (float)(2.0 / (top - bottom));
             mat[6] = .0f;
             mat[7] = .0f;
 
             mat[8] = .0f;
             mat[9] = .0f;
-            mat[10] = -2.0f / (f - n);
+            mat[10] = (float)(-2.0 / (f - n));
             mat[11] = .0f;
 
-            mat[12] = -(right + left) / (right - left);
-            mat[13] = -(top + bottom) / (top - bottom);
-            mat[14] = -(f + n) / (f - n);
+            mat[12] = (float)(-(right + left) / (right - left));
+            mat[13] = (float)(-(top + bottom) / (top - bottom));
+            mat[14] = (float)(-(f + n) / (f - n));
             mat[15] = 1.0f;
             GLESV2.GL.glUniformMatrix4fv(proj_mat_location, 1, false, mat);
         }
