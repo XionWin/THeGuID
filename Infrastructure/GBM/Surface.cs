@@ -63,7 +63,7 @@ namespace GBM
             return this;
         }
 
-        public Surface Init(Action<BufferObject, uint> action)
+        public Surface Initialize(Action<BufferObject, uint> action)
         {
             this.eglSwap();
             this.Lock((bo, fb) => {

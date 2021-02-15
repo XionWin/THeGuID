@@ -108,10 +108,11 @@ namespace THeGuID
                     var proj_mat_location = GLESV2.GL.glGetUniformLocation(program, "proj_mat");
                     var model_mat_location = GLESV2.GL.glGetUniformLocation(program, "model_mat");
                     
-                    ctx.Render(
+                    ctx.Initialize(
                         () => {
                             Resize(ctx.Width, ctx.Height, proj_mat_location);
-                        },
+                        }
+                    ).Render(
                         () => {
                             var rgb = hsl.ToRGB();
 

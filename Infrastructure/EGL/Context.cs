@@ -44,6 +44,48 @@ namespace EGL
         }
         #endregion
 
+        public Context Initialize(Action initFunc)
+        {
+            this.Gbm.Surface
+            .RegisterSwapMethod(() => EGL.Egl.eglSwapBuffers(this.EglDisplay, this.EglSurface))
+            .Initialize((bo, fb) =>
+            {
+                if (DRM.Native.SetCrtc(this.Drm.Fd, this.Drm.Crtc.Id, (uint)fb, 0, 0, new[] { this.Drm.Connector.Id }, this.Drm.Mode) is var setCrtcResult)
+                    Console.WriteLine($"set crtc: {setCrtcResult}");
+                this.Width = (int)bo.Width;
+                this.Height = (int)bo.Height;
+                initFunc?.Invoke();
+            });
+            return this;
+        }
+
+        public void Render(Action renderFunc)
+        {
+            nint page_flip_handler = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(new PageFilpHandler(
+                (int fd, uint frame, uint sec, uint usec, ref int data) =>
+                {
+                    data = 0;
+                }
+            ));
+            var eventCtx = new DRM.EventContext() { version = 2, page_flip_handler = page_flip_handler };
+
+            this.Gbm.Surface.SwapBuffers(
+                renderFunc,
+                (bo, fb) =>
+                {
+                    if(this.VerticalSynchronization)
+                    {
+                        var waitingFlag = 1;
+                        DRM.Native.PageFlip(this.Drm.Fd, this.Drm.Crtc.Id, (uint)fb, DRM.PageFlipFlags.FlipEvent, ref waitingFlag);
+                        while(waitingFlag != 0)
+                        {
+                            DRM.Native.HandleEvent(this.Drm.Fd, ref eventCtx);
+                        }
+                    }
+                }
+            );
+        }
+
         private GBM.Gbm GetGbm(DRM.Drm drm, RenderableSurfaceType surfaceType)
         {
             using (var resources = new DRM.Resources(drm.Fd))
@@ -72,43 +114,6 @@ namespace EGL
             var gbm = new GBM.Gbm(dev, drm.Crtc.Width, drm.Crtc.Height, GBM.SurfaceFormat.ARGB8888, GBM.FormatMod.DRM_FORMAT_MOD_LINEAR);
             Console.WriteLine(gbm.ToString());
             return gbm;
-        }
-
-        public void Render(Action initFunc, Action renderFunc)
-        {
-            nint page_flip_handler = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(new PageFilpHandler(
-                (int fd, uint frame, uint sec, uint usec, ref int data) =>
-                {
-                    data = 0;
-                }
-            ));
-            var eventCtx = new DRM.EventContext() { version = 2, page_flip_handler = page_flip_handler };
-
-            this.Gbm.Surface
-            .RegisterSwapMethod(() => EGL.Egl.eglSwapBuffers(this.EglDisplay, this.EglSurface))
-            .Init((bo, fb) =>
-            {
-                if (DRM.Native.SetCrtc(this.Drm.Fd, this.Drm.Crtc.Id, (uint)fb, 0, 0, new[] { this.Drm.Connector.Id }, this.Drm.Mode) is var setCrtcResult)
-                    Console.WriteLine($"set crtc: {setCrtcResult}");
-                this.Width = (int)bo.Width;
-                this.Height = (int)bo.Height;
-                initFunc?.Invoke();
-            })
-            .SwapBuffers(
-                renderFunc,
-                (bo, fb) =>
-                {
-                    if(this.VerticalSynchronization)
-                    {
-                        var waitingFlag = 1;
-                        DRM.Native.PageFlip(this.Drm.Fd, this.Drm.Crtc.Id, (uint)fb, DRM.PageFlipFlags.FlipEvent, ref waitingFlag);
-                        while(waitingFlag != 0)
-                        {
-                            DRM.Native.HandleEvent(this.Drm.Fd, ref eventCtx);
-                        }
-                    }
-                }
-            );
         }
 
 
