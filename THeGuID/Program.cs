@@ -22,7 +22,7 @@ namespace THeGuID
 
             var fd = Libc.Context.open("/dev/dri/card1", Libc.OpenFlags.ReadWrite);
 
-            using (var ctx = new EGL.Context(fd, EGL.RenderableSurfaceType.OpenGLESV2) { VerticalSynchronization = false })
+            using (var ctx = new EGL.Context(fd, EGL.RenderableSurfaceType.OpenGLESV2) { VerticalSynchronization = true })
             {
                 Console.WriteLine($"GL Extensions: {GLESV2.GL.GetString(GLESV2.GLD.GL_EXTENSIONS)}");
                 Console.WriteLine($"GL Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_VERSION)}");
@@ -111,9 +111,9 @@ namespace THeGuID
                         () => {
                             var rgb = hsl.ToRGB();
                     
-                            var angle = System.Environment.TickCount % (360 * 10d) / 10d;
+                            var angle = System.Environment.TickCount64 % (360 * 20d) / 20d;
 
-                            GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .1f);
+                            GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .25f);
 
                             GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
 
@@ -122,21 +122,21 @@ namespace THeGuID
 
                             hsl.H = angle + 90;
 
-                            var et = DateTime.Now;
-                            var dt = et - st;
-                            st = et;
+                            // var et = DateTime.Now;
+                            // var dt = et - st;
+                            // st = et;
 
-                            frame++;
-                            totalTime += dt;
-                            if (totalTime.TotalMilliseconds > 30 * 1000)
-                            {
-                                using (var mproc = System.Diagnostics.Process.GetCurrentProcess())
-                                {
-                                    Console.WriteLine($"[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")}]: {frame} frames rendered in {(float)totalTime.TotalMilliseconds / 1000:.##} seconds -> FPS={(float)frame / totalTime.TotalMilliseconds * 1000:.##}, memory used: {(double)mproc.WorkingSet64 / 1024 / 1024:.##}M, system memory used: {(double)mproc.PrivateMemorySize64 / 1024 / 1024:.##}M");
-                                    frame = 0;
-                                    totalTime = TimeSpan.Zero;
-                                }
-                            }
+                            // frame++;
+                            // totalTime += dt;
+                            // if (totalTime.TotalMilliseconds > 30 * 1000)
+                            // {
+                            //     using (var mproc = System.Diagnostics.Process.GetCurrentProcess())
+                            //     {
+                            //         Console.WriteLine($"[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")}]: {frame} frames rendered in {(float)totalTime.TotalMilliseconds / 1000:.##} seconds -> FPS={(float)frame / totalTime.TotalMilliseconds * 1000:.##}, memory used: {(double)mproc.WorkingSet64 / 1024 / 1024:.##}M, system memory used: {(double)mproc.PrivateMemorySize64 / 1024 / 1024:.##}M");
+                            //         frame = 0;
+                            //         totalTime = TimeSpan.Zero;
+                            //     }
+                            // }
                         }
                     );
                 }
