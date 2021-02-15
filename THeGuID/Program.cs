@@ -22,7 +22,7 @@ namespace THeGuID
 
             var fd = Libc.Context.open("/dev/dri/card1", Libc.OpenFlags.ReadWrite);
 
-            using (var ctx = new EGL.Context(fd, EGL.RenderableSurfaceType.OpenGLESV2) { VerticalSynchronization = true })
+            using (var ctx = new EGL.Context(fd, EGL.RenderableSurfaceType.OpenGLESV2) { VerticalSynchronization = false })
             {
                 Console.WriteLine($"GL Extensions: {GLESV2.GL.GetString(GLESV2.GLD.GL_EXTENSIONS)}");
                 Console.WriteLine($"GL Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_VERSION)}");
@@ -37,11 +37,8 @@ namespace THeGuID
                 var frame = 0u;
                 var totalTime = TimeSpan.Zero;
 
-                var hsl = new Graphic.Drawing.Color.HSLA(0.0d, 1.0d, 0.0d, 255);
-                var direction = true;
+                var hsl = new Graphic.Drawing.Color.HSLA(0.0d, 1.0d, 0.5d, 255);
 
-
-                
                 uint size = 5;
                 const float TRIANGLE_SIZE = 0.8f;
 
@@ -92,8 +89,6 @@ namespace THeGuID
                 using (var program = new GLESV2.GFX.GfxProgram(@"Shader/simplevertshader.glsl", @"Shader/simplefragshader.glsl"))
                 {
                     GLESV2.GL.glClearColor(1f, 1f, 1f, .2f);
-                    const double maxL = 1d;
-
 
                     GLESV2.GL.glUseProgram(program);
 
@@ -107,7 +102,7 @@ namespace THeGuID
 
                     var proj_mat_location = GLESV2.GL.glGetUniformLocation(program, "proj_mat");
                     var model_mat_location = GLESV2.GL.glGetUniformLocation(program, "model_mat");
-                    
+
                     ctx.Initialize(
                         () => {
                             Resize(ctx.Width, ctx.Height, proj_mat_location);
@@ -115,28 +110,17 @@ namespace THeGuID
                     ).Render(
                         () => {
                             var rgb = hsl.ToRGB();
+                    
+                            var angle = System.Environment.TickCount % (360 * 10d) / 10d;
 
-                            GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .3f);
+                            GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .1f);
 
                             GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
 
-			                SetRotationMatrix((DateTime.Now.Second * 1000.0 + DateTime.Now.Millisecond) / 1000.0 * Math.PI / 2.0, model_mat_location);
+			                SetRotationMatrix(-angle / 360d * Math.PI * 2, model_mat_location);
                             GLESV2.GL.glDrawArrays(GLESV2.GLD.GL_TRIANGLE_FAN, 0, size);
 
-                            direction = hsl.L switch
-                            {
-                                >= maxL => false,
-                                <= 0 => true,
-                                _ => direction,
-                            };
-                            hsl.H += 2;
-                            if (hsl.H >= 360)
-                            {
-                                hsl.H = 0;
-                            }
-                            var stepValue = (float)hsl.H / 360 * 0.01;
-                            hsl.L += direction ? stepValue : -stepValue;
-                            hsl.L = Math.Min(Math.Max(hsl.L, 0), maxL);
+                            hsl.H = angle + 90;
 
                             var et = DateTime.Now;
                             var dt = et - st;
