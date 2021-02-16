@@ -113,7 +113,7 @@ namespace THeGuID
                     
                             var angle = System.Environment.TickCount64 % (360 * 20d) / 20d;
 
-                            GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .25f);
+                            GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .8f);
 
                             GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
 
