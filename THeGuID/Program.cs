@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Graphic.Drawing.Color;
+using Mathematics;
 
 namespace THeGuID
 {
@@ -19,6 +20,16 @@ namespace THeGuID
         static void Main(string[] args)
         {
             Console.WriteLine("The Grid...");
+
+            #region mathematics test
+            
+            var v1 = Vector2.UnitX;
+            var v2 = Vector2.UnitY;
+            var v3 = v1.Lerp(v2, .2f);
+
+            var v4 = v1.BaryCentric(v2, v3, 0.2f, 0.3f);
+            
+            #endregion
 
             var fd = Libc.Context.open("/dev/dri/card1", Libc.OpenFlags.ReadWrite);
 
@@ -113,9 +124,9 @@ namespace THeGuID
                     
                             var angle = System.Environment.TickCount64 % (360 * 20d) / 20d;
 
-                            GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .8f);
+                            GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .2f);
 
-                            GLESV2.GL.glClear(GLESV2.GLD.GL_COLOR_BUFFER_BIT);
+                            GLESV2.GL.glClear(GLESV2.ClearBufferMask.ColorBufferBit);
 
 			                SetRotationMatrix(-angle / 360d * Math.PI * 2, model_mat_location);
                             GLESV2.GL.glDrawArrays(GLESV2.GLD.GL_TRIANGLE_FAN, 0, size);

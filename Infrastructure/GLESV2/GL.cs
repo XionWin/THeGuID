@@ -14,7 +14,7 @@ namespace GLESV2
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern void glViewport(int x, int y, int width, int height);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void glClear(GLD mask);
+        public static extern void glClear(ClearBufferMask mask);
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint glGetError();
