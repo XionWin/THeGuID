@@ -24,7 +24,7 @@ namespace THeGuID
             #region mathematics test
             
             var v1 = Vector2.UnitX;
-            var v2 = Vector2.UnitY;
+            var v2 = Vector2.UnitY; 
             var v3 = v1.Lerp(v2, .2f);
 
             var v4 = v1.BaryCentric(v2, v3, 0.2f, 0.3f);
@@ -66,8 +66,8 @@ namespace THeGuID
                     for (int i = 0; i < size - 1; i++)
                     {
                         int pos = i + 1;
-                        vertices[pos].x = (float)Math.Cos(i * (2.0f * Math.PI / (size - 2))) * TRIANGLE_SIZE;
-                        vertices[pos].y = (float)Math.Sin(i * (2.0f * Math.PI / (size - 2))) * TRIANGLE_SIZE;
+                        vertices[pos].x = (float)Math.Cos(-i * (2.0f * Math.PI / (size - 2))) * TRIANGLE_SIZE;
+                        vertices[pos].y = (float)Math.Sin(-i * (2.0f * Math.PI / (size - 2))) * TRIANGLE_SIZE;
                         
                         vertices[pos].r = 0.0f;
                         vertices[pos].g = 0.0f;
@@ -128,7 +128,7 @@ namespace THeGuID
 
                             GLESV2.GL.glClear(GLESV2.ClearBufferMask.ColorBufferBit);
 
-			                SetRotationMatrix(-angle / 360d * Math.PI * 2, model_mat_location);
+			                SetRotationMatrix(angle / 360d * Math.PI * 2, model_mat_location);
                             GLESV2.GL.glDrawArrays(GLESV2.GLD.GL_TRIANGLE_FAN, 0, size);
 
                             hsl.H = angle + 90;
@@ -137,17 +137,17 @@ namespace THeGuID
                             var dt = et - st;
                             st = et;
 
-                            frame++;
-                            totalTime += dt;
-                            if (totalTime.TotalMilliseconds > 30 * 1000)
-                            {
-                                using (var mproc = System.Diagnostics.Process.GetCurrentProcess())
-                                {
-                                    Console.WriteLine($"[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")}]: {frame} frames rendered in {(float)totalTime.TotalMilliseconds / 1000:.##} seconds -> FPS={(float)frame / totalTime.TotalMilliseconds * 1000:.##}, memory used: {(double)mproc.WorkingSet64 / 1024 / 1024:.##}M, system memory used: {(double)mproc.PrivateMemorySize64 / 1024 / 1024:.##}M");
-                                    frame = 0;
-                                    totalTime = TimeSpan.Zero;
-                                }
-                            }
+                            // frame++;
+                            // totalTime += dt;
+                            // if (totalTime.TotalMilliseconds > 30 * 1000)
+                            // {
+                            //     using (var mproc = System.Diagnostics.Process.GetCurrentProcess())
+                            //     {
+                            //         Console.WriteLine($"[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")}]: {frame} frames rendered in {(float)totalTime.TotalMilliseconds / 1000:.##} seconds -> FPS={(float)frame / totalTime.TotalMilliseconds * 1000:.##}, memory used: {(double)mproc.WorkingSet64 / 1024 / 1024:.##}M, system memory used: {(double)mproc.PrivateMemorySize64 / 1024 / 1024:.##}M");
+                            //         frame = 0;
+                            //         totalTime = TimeSpan.Zero;
+                            //     }
+                            // }
                         }
                     );
                 }
@@ -159,26 +159,96 @@ namespace THeGuID
             // rotation around z axis
             float sin_angle = (float)Math.Sin(rad);
             float cos_angle = (float)Math.Cos(rad);
+            // var mat = new float[16];
+            // mat[0] = cos_angle;
+            // mat[1] = sin_angle;
+            // mat[2] = 0;
+            // mat[3] = 0;
+
+            // mat[4] = -sin_angle;
+            // mat[5] = cos_angle;
+            // mat[6] = 0;
+            // mat[7] = 0;
+
+            // mat[8] = 0;
+            // mat[9] = 0;
+            // mat[10] = 1;
+            // mat[11] = 0;
+
+            // mat[12] = 0;
+            // mat[13] = 0;
+            // mat[14] = 0;
+            // mat[15] = 1;
+
+
+            
+            // System.Numerics.Matrix4x4 m2 = new System.Numerics.Matrix4x4();
+            // m1.M11 = cos_angle;
+            // m1.M13 = -sin_angle;
+
+            // m1.M22 = 1;
+            
+            // m1.M31 = sin_angle;
+            // m1.M33 = cos_angle;
+
+            // m1.M44 = 1;
+            
+            // mat[0] = cos_angle;
+            // mat[1] = 0;
+            // mat[2] = -sin_angle;
+            // mat[3] = 0;
+
+            // mat[4] = 0;
+            // mat[5] = 1;
+            // mat[6] = 0;
+            // mat[7] = 0;
+
+            // mat[8] = sin_angle;
+            // mat[9] = 0;
+            // mat[10] = cos_angle;
+            // mat[11] = 0;
+
+            // mat[12] = 0;
+            // mat[13] = 0;
+            // mat[14] = 0;
+            // mat[15] = 1;
+            
             var mat = new float[16];
-            mat[0] = cos_angle;
-            mat[1] = sin_angle;
-            mat[2] = 0;
-            mat[3] = 0;
+            unsafe
+            {
+                System.Numerics.Matrix4x4 m1 = new System.Numerics.Matrix4x4();
+                m1.M11 = cos_angle;
+                m1.M12 = sin_angle;
 
-            mat[4] = -sin_angle;
-            mat[5] = cos_angle;
-            mat[6] = 0;
-            mat[7] = 0;
+                m1.M21 = -sin_angle;
+                m1.M22 = cos_angle;
+                
+                m1.M33 = 1;
 
-            mat[8] = 0;
-            mat[9] = 0;
-            mat[10] = 1;
-            mat[11] = 0;
+                m1.M44 = 1;
 
-            mat[12] = 0;
-            mat[13] = 0;
-            mat[14] = 0;
-            mat[15] = 1;
+                System.Numerics.Matrix4x4 m2 = new System.Numerics.Matrix4x4();
+                m2.M11 = cos_angle;
+                m2.M13 = -sin_angle;
+
+                m2.M22 = 1;
+                
+                m2.M31 = sin_angle;
+                m2.M33 = cos_angle;
+
+                m2.M44 = 1;
+
+                var mr = m1 * m2;
+
+                System.Numerics.Matrix4x4 *ptr = &mr;
+                float * ptr2 = (float *)ptr;
+                for (int i = 0; i < 16; i++)
+                {
+                    mat[i] = *(ptr2 + i);
+                }
+            }
+
+
             GLESV2.GL.glUniformMatrix4fv(model_mat_location, 1, false, mat);
         }
 
