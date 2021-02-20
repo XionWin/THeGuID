@@ -159,61 +159,6 @@ namespace THeGuID
             // rotation around z axis
             float sin_angle = (float)Math.Sin(rad);
             float cos_angle = (float)Math.Cos(rad);
-            // var mat = new float[16];
-            // mat[0] = cos_angle;
-            // mat[1] = sin_angle;
-            // mat[2] = 0;
-            // mat[3] = 0;
-
-            // mat[4] = -sin_angle;
-            // mat[5] = cos_angle;
-            // mat[6] = 0;
-            // mat[7] = 0;
-
-            // mat[8] = 0;
-            // mat[9] = 0;
-            // mat[10] = 1;
-            // mat[11] = 0;
-
-            // mat[12] = 0;
-            // mat[13] = 0;
-            // mat[14] = 0;
-            // mat[15] = 1;
-
-
-            
-            // System.Numerics.Matrix4x4 m2 = new System.Numerics.Matrix4x4();
-            // m1.M11 = cos_angle;
-            // m1.M13 = -sin_angle;
-
-            // m1.M22 = 1;
-            
-            // m1.M31 = sin_angle;
-            // m1.M33 = cos_angle;
-
-            // m1.M44 = 1;
-            
-            // mat[0] = cos_angle;
-            // mat[1] = 0;
-            // mat[2] = -sin_angle;
-            // mat[3] = 0;
-
-            // mat[4] = 0;
-            // mat[5] = 1;
-            // mat[6] = 0;
-            // mat[7] = 0;
-
-            // mat[8] = sin_angle;
-            // mat[9] = 0;
-            // mat[10] = cos_angle;
-            // mat[11] = 0;
-
-            // mat[12] = 0;
-            // mat[13] = 0;
-            // mat[14] = 0;
-            // mat[15] = 1;
-            
-            var mat = new float[16];
             unsafe
             {
                 System.Numerics.Matrix4x4 m1 = new System.Numerics.Matrix4x4();
@@ -232,7 +177,7 @@ namespace THeGuID
                 m2.M13 = -sin_angle;
 
                 m2.M22 = 1;
-                
+
                 m2.M31 = sin_angle;
                 m2.M33 = cos_angle;
 
@@ -240,16 +185,10 @@ namespace THeGuID
 
                 var mr = m1 * m2;
 
-                System.Numerics.Matrix4x4 *ptr = &mr;
-                float * ptr2 = (float *)ptr;
-                for (int i = 0; i < 16; i++)
-                {
-                    mat[i] = *(ptr2 + i);
-                }
+                var ptr = (float *)&mr;
+                
+                GLESV2.GL.glUniformMatrix4fv(model_mat_location, 1, false, ptr);
             }
-
-
-            GLESV2.GL.glUniformMatrix4fv(model_mat_location, 1, false, mat);
         }
 
         private static void Resize(int w, int h, uint proj_mat_location)
