@@ -137,17 +137,17 @@ namespace THeGuID
                             var dt = et - st;
                             st = et;
 
-                            // frame++;
-                            // totalTime += dt;
-                            // if (totalTime.TotalMilliseconds > 30 * 1000)
-                            // {
-                            //     using (var mproc = System.Diagnostics.Process.GetCurrentProcess())
-                            //     {
-                            //         Console.WriteLine($"[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")}]: {frame} frames rendered in {(float)totalTime.TotalMilliseconds / 1000:.##} seconds -> FPS={(float)frame / totalTime.TotalMilliseconds * 1000:.##}, memory used: {(double)mproc.WorkingSet64 / 1024 / 1024:.##}M, system memory used: {(double)mproc.PrivateMemorySize64 / 1024 / 1024:.##}M");
-                            //         frame = 0;
-                            //         totalTime = TimeSpan.Zero;
-                            //     }
-                            // }
+                            frame++;
+                            totalTime += dt;
+                            if (totalTime.TotalMilliseconds > 30 * 1000)
+                            {
+                                using (var mproc = System.Diagnostics.Process.GetCurrentProcess())
+                                {
+                                    Console.WriteLine($"[{DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")}]: {frame} frames rendered in {(float)totalTime.TotalMilliseconds / 1000:.##} seconds -> FPS={(float)frame / totalTime.TotalMilliseconds * 1000:.##}, memory used: {(double)mproc.WorkingSet64 / 1024 / 1024:.##}M, system memory used: {(double)mproc.PrivateMemorySize64 / 1024 / 1024:.##}M");
+                                    frame = 0;
+                                    totalTime = TimeSpan.Zero;
+                                }
+                            }
                         }
                     );
                 }
