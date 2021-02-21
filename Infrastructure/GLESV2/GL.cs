@@ -14,7 +14,7 @@ namespace GLESV2
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern void glViewport(int x, int y, int width, int height);
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void glClear(ClearBufferMask mask);
+        public static extern void glClear(Def.ClearBufferMask mask);
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern uint glGetError();
@@ -131,13 +131,13 @@ namespace GLESV2
 
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void glGenBuffers (uint n, ref uint bufferId);
+        public static extern void glGenBuffers (uint n, out uint bufferId);
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void glBindBuffer (GLD target, uint bufferId);
+        public static extern void glBindBuffer (Def.BufferTarget target, uint bufferId);
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void glBufferData (GLD target, int size, nint data, GLD usage);
+        public static extern void glBufferData (Def.BufferTarget target, int size, nint data, GLD usage);
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern void glUniformMatrix4fv (uint location, uint count, [MarshalAs(UnmanagedType.Bool)]bool transpose, float[] value);

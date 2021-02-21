@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using Graphic.Drawing.Color;
-using Mathematics;
 
 namespace THeGuID
 {
@@ -21,19 +20,9 @@ namespace THeGuID
         {
             Console.WriteLine("The Grid...");
 
-            #region mathematics test
-            
-            var v1 = Vector2.UnitX;
-            var v2 = Vector2.UnitY; 
-            var v3 = v1.Lerp(v2, .2f);
-
-            var v4 = v1.BaryCentric(v2, v3, 0.2f, 0.3f);
-            
-            #endregion
-
             var fd = Libc.Context.open("/dev/dri/card1", Libc.OpenFlags.ReadWrite);
 
-            using (var ctx = new EGL.Context(fd, EGL.RenderableSurfaceType.OpenGLESV2) { VerticalSynchronization = true })
+            using (var ctx = new EGL.Context(fd, EGL.RenderableSurfaceType.OpenGLESV2) { VerticalSynchronization = false })
             {
                 Console.WriteLine($"GL Extensions: {GLESV2.GL.GetString(GLESV2.GLD.GL_EXTENSIONS)}");
                 Console.WriteLine($"GL Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_VERSION)}");
@@ -43,7 +32,7 @@ namespace THeGuID
 
                 GLESV2.GL.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
                 GLESV2.GL.glViewport(0, 0, ctx.Width, ctx.Height);
-
+                
                 var st = DateTime.Now;
                 var frame = 0u;
                 var totalTime = TimeSpan.Zero;
@@ -60,43 +49,39 @@ namespace THeGuID
                 vertices[0].g = .0f;
                 vertices[0].b = .0f;
                 vertices[0].a = 1.0f;
-                
+
                 unsafe
                 {
-                    for (int i = 0; i < size - 1; i++)
+                    fixed (Vertex* ptr = vertices)
                     {
-                        int pos = i + 1;
-                        vertices[pos].x = (float)Math.Cos(-i * (2.0f * Math.PI / (size - 2))) * TRIANGLE_SIZE;
-                        vertices[pos].y = (float)Math.Sin(-i * (2.0f * Math.PI / (size - 2))) * TRIANGLE_SIZE;
-                        
-                        vertices[pos].r = 0.0f;
-                        vertices[pos].g = 0.0f;
-                        vertices[pos].b = 0.0f;
-                        vertices[pos].a = 1.0f;
-
-                        fixed(Vertex *ptr = vertices)
+                        for (int i = 0; i < size - 1; i++)
                         {
+                            int pos = i + 1;
+                            vertices[pos].x = (float)Math.Cos(-i * (2.0f * Math.PI / (size - 2))) * TRIANGLE_SIZE;
+                            vertices[pos].y = (float)Math.Sin(-i * (2.0f * Math.PI / (size - 2))) * TRIANGLE_SIZE;
+
+                            vertices[pos].r = 0.0f;
+                            vertices[pos].g = 0.0f;
+                            vertices[pos].b = 0.0f;
+                            vertices[pos].a = 1.0f;
+
                             var vPtr = ptr + pos;
-                            float * fPtr = (float *)vPtr;
+                            float* fPtr = (float*)vPtr;
                             var fpp = fPtr + 2 + (i % 3);
                             *fpp = 1.0f;
                         }
                         
+                        GLESV2.GL.glGenBuffers(1, out uint vbo);
+                        GLESV2.GL.glBindBuffer(GLESV2.Def.BufferTarget.ArrayBuffer, vbo);
+                        GLESV2.GL.glBufferData(GLESV2.Def.BufferTarget.ArrayBuffer, (int)(Marshal.SizeOf(typeof(Vertex)) * size), (nint)ptr, GLESV2.GLD.GL_STATIC_DRAW);
+
                     }
                 }
 
-                uint vbo = 0;
-                GLESV2.GL.glGenBuffers(1, ref vbo);
-                GLESV2.GL.glBindBuffer(GLESV2.GLD.GL_ARRAY_BUFFER, vbo);
 
-                unsafe
-                {
-                    fixed(Vertex * verticesPtr = vertices)
-                    {
-                        GLESV2.GL.glBufferData(GLESV2.GLD.GL_ARRAY_BUFFER, (int)(Marshal.SizeOf(typeof(Vertex)) * size), (nint)verticesPtr, GLESV2.GLD.GL_STATIC_DRAW);
-                    }
-                }
-                
+
+
+
                 using (var program = new GLESV2.GFX.GfxProgram(@"Shader/simplevertshader.glsl", @"Shader/simplefragshader.glsl"))
                 {
                     GLESV2.GL.glClearColor(1f, 1f, 1f, .2f);
@@ -115,20 +100,22 @@ namespace THeGuID
                     var model_mat_location = GLESV2.GL.glGetUniformLocation(program, "model_mat");
 
                     ctx.Initialize(
-                        () => {
+                        () =>
+                        {
                             Resize(ctx.Width, ctx.Height, proj_mat_location);
                         }
                     ).Render(
-                        () => {
+                        () =>
+                        {
                             var rgb = hsl.ToRGB();
-                    
+
                             var angle = System.Environment.TickCount64 % (360 * 20d) / 20d;
 
                             GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .2f);
 
-                            GLESV2.GL.glClear(GLESV2.ClearBufferMask.ColorBufferBit);
+                            GLESV2.GL.glClear(GLESV2.Def.ClearBufferMask.ColorBufferBit);
 
-			                SetRotationMatrix(angle / 360d * Math.PI * 2, model_mat_location);
+                            SetRotationMatrix(angle / 360d * Math.PI * 2, model_mat_location);
                             GLESV2.GL.glDrawArrays(GLESV2.GLD.GL_TRIANGLE_FAN, 0, size);
 
                             hsl.H = angle + 90;
@@ -159,34 +146,33 @@ namespace THeGuID
             // rotation around z axis
             float sin_angle = (float)Math.Sin(rad);
             float cos_angle = (float)Math.Cos(rad);
+            System.Numerics.Matrix4x4 m1 = new System.Numerics.Matrix4x4();
+            m1.M11 = cos_angle;
+            m1.M12 = sin_angle;
+
+            m1.M21 = -sin_angle;
+            m1.M22 = cos_angle;
+
+            m1.M33 = 1;
+
+            m1.M44 = 1;
+
+            System.Numerics.Matrix4x4 m2 = new System.Numerics.Matrix4x4();
+            m2.M11 = cos_angle;
+            m2.M13 = -sin_angle;
+
+            m2.M22 = 1;
+
+            m2.M31 = sin_angle;
+            m2.M33 = cos_angle;
+
+            m2.M44 = 1;
+
+            var mr = m1 * m2;
             unsafe
             {
-                System.Numerics.Matrix4x4 m1 = new System.Numerics.Matrix4x4();
-                m1.M11 = cos_angle;
-                m1.M12 = sin_angle;
+                var ptr = (float*)&mr;
 
-                m1.M21 = -sin_angle;
-                m1.M22 = cos_angle;
-                
-                m1.M33 = 1;
-
-                m1.M44 = 1;
-
-                System.Numerics.Matrix4x4 m2 = new System.Numerics.Matrix4x4();
-                m2.M11 = cos_angle;
-                m2.M13 = -sin_angle;
-
-                m2.M22 = 1;
-
-                m2.M31 = sin_angle;
-                m2.M33 = cos_angle;
-
-                m2.M44 = 1;
-
-                var mr = m1 * m2;
-
-                var ptr = (float *)&mr;
-                
                 GLESV2.GL.glUniformMatrix4fv(model_mat_location, 1, false, ptr);
             }
         }
@@ -207,7 +193,7 @@ namespace THeGuID
             }
         }
         private static void SetOrthoMatrix(double left, double right, double bottom,
-					double top, double n, double f, uint proj_mat_location)
+                    double top, double n, double f, uint proj_mat_location)
         {
             // set orthogonal matrix
             var mat = new float[16];
