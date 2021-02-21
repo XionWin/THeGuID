@@ -73,14 +73,9 @@ namespace THeGuID
                         
                         GLESV2.GL.glGenBuffers(1, out uint vbo);
                         GLESV2.GL.glBindBuffer(GLESV2.Def.BufferTarget.ArrayBuffer, vbo);
-                        GLESV2.GL.glBufferData(GLESV2.Def.BufferTarget.ArrayBuffer, (int)(Marshal.SizeOf(typeof(Vertex)) * size), (nint)ptr, GLESV2.GLD.GL_STATIC_DRAW);
-
+                        GLESV2.GL.glBufferData(GLESV2.Def.BufferTarget.ArrayBuffer, (int)(Marshal.SizeOf(typeof(Vertex)) * size), (nint)ptr, GLESV2.GLD.GL_STREAM_DRAW);
                     }
                 }
-
-
-
-
 
                 using (var program = new GLESV2.GFX.GfxProgram(@"Shader/simplevertshader.glsl", @"Shader/simplefragshader.glsl"))
                 {
@@ -112,7 +107,6 @@ namespace THeGuID
                             var angle = System.Environment.TickCount64 % (360 * 20d) / 20d;
 
                             GLESV2.GL.glClearColor((float)rgb.R / 255, (float)rgb.G / 255, (float)rgb.B / 255, .2f);
-
                             GLESV2.GL.glClear(GLESV2.Def.ClearBufferMask.ColorBufferBit);
 
                             SetRotationMatrix(angle / 360d * Math.PI * 2, model_mat_location);
