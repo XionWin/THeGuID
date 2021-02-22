@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Graphic.Drawing
 {
-    public class Path
+    public struct Path
     {   
         public int First { get; set; }
         public int Count { get; set; }

@@ -13,6 +13,7 @@
     <ProjectReference Include="..\Infrastructure\Extension\Extension.csproj" />
     
     <ProjectReference Include="..\Graphic\Drawing\Drawing.csproj" />
+    <ProjectReference Include="..\Pencil\Pencil.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,11 +6,11 @@ namespace GLESV2.GFX
     public class GfxShader: GfxObject
     {
         public string Source { get; init; }
-        public ShaderType Type { get; init; }
+        public Def.ShaderType ShaderType { get; init; }
 
-        internal GfxShader(ShaderType shaderType, string path): base()
+        internal GfxShader(Def.ShaderType shaderType, string path): base()
         {
-            this.Id = GL.glCreateShader(this.Type = shaderType);
+            this.Id = GL.glCreateShader(this.ShaderType = shaderType);
             using (var sr = new System.IO.StreamReader(path))
             {
                 this.Source = sr.ReadToEnd();

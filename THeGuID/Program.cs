@@ -22,13 +22,13 @@ namespace THeGuID
 
             var fd = Libc.Context.open("/dev/dri/card1", Libc.OpenFlags.ReadWrite);
 
-            using (var ctx = new EGL.Context(fd, EGL.RenderableSurfaceType.OpenGLESV2) { VerticalSynchronization = false })
+            using (var ctx = new EGL.Context(fd, EGL.RenderableSurfaceType.OpenGLESV2) { VerticalSynchronization = true })
             {
-                Console.WriteLine($"GL Extensions: {GLESV2.GL.GetString(GLESV2.GLD.GL_EXTENSIONS)}");
-                Console.WriteLine($"GL Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_VERSION)}");
-                Console.WriteLine($"GL Sharding Language Version: {GLESV2.GL.GetString(GLESV2.GLD.GL_SHADING_LANGUAGE_VERSION)}");
-                Console.WriteLine($"GL Vendor: {GLESV2.GL.GetString(GLESV2.GLD.GL_VENDOR)}");
-                Console.WriteLine($"GL Renderer: {GLESV2.GL.GetString(GLESV2.GLD.GL_RENDERER)}");
+                Console.WriteLine($"GL Extensions: {GLESV2.GL.GetString(GLESV2.Def.StringName.Extensions)}");
+                Console.WriteLine($"GL Version: {GLESV2.GL.GetString(GLESV2.Def.StringName.Version)}");
+                Console.WriteLine($"GL Sharding Language Version: {GLESV2.GL.GetString(GLESV2.Def.StringName.ShadingLanguageVersion)}");
+                Console.WriteLine($"GL Vendor: {GLESV2.GL.GetString(GLESV2.Def.StringName.Vendor)}");
+                Console.WriteLine($"GL Renderer: {GLESV2.GL.GetString(GLESV2.Def.StringName.Renderer)}");
 
                 GLESV2.GL.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
                 GLESV2.GL.glViewport(0, 0, ctx.Width, ctx.Height);
@@ -73,7 +73,7 @@ namespace THeGuID
                         
                         GLESV2.GL.glGenBuffers(1, out uint vbo);
                         GLESV2.GL.glBindBuffer(GLESV2.Def.BufferTarget.ArrayBuffer, vbo);
-                        GLESV2.GL.glBufferData(GLESV2.Def.BufferTarget.ArrayBuffer, (int)(Marshal.SizeOf(typeof(Vertex)) * size), (nint)ptr, GLESV2.GLD.GL_STREAM_DRAW);
+                        GLESV2.GL.glBufferData(GLESV2.Def.BufferTarget.ArrayBuffer, (int)(Marshal.SizeOf(typeof(Vertex)) * size), (nint)ptr, GLESV2.Def.BufferUsageHint.StreamDraw);
                     }
                 }
 
@@ -110,7 +110,7 @@ namespace THeGuID
                             GLESV2.GL.glClear(GLESV2.Def.ClearBufferMask.ColorBufferBit);
 
                             SetRotationMatrix(angle / 360d * Math.PI * 2, model_mat_location);
-                            GLESV2.GL.glDrawArrays(GLESV2.GLD.GL_TRIANGLE_FAN, 0, size);
+                            GLESV2.GL.glDrawArrays(GLESV2.Def.BeginMode.TriangleFan, 0, size);
 
                             hsl.H = angle + 90;
 

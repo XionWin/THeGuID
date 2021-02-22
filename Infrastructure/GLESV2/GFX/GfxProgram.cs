@@ -6,8 +6,8 @@ namespace GLESV2.GFX
         {
             this.Id = GL.glCreateProgram();
 
-            using(var vertexShader = new GfxShader(ShaderType.Vertex, vertexShaderPath).Load().Check())
-            using(var fragmentShader = new GfxShader(ShaderType.Fragment, fragmentShaderPath).Load().Check())
+            using(var vertexShader = new GfxShader(Def.ShaderType.VertexShader, vertexShaderPath).Load().Check())
+            using(var fragmentShader = new GfxShader(Def.ShaderType.FragmentShader, fragmentShaderPath).Load().Check())
             {
                 this.AttachShader(vertexShader)
                 .AttachShader(fragmentShader)
