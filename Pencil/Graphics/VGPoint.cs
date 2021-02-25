@@ -2,9 +2,9 @@ using System;
 
 namespace Pencil.Graphics
 {
-    public class VGPoint
+    public struct VGPoint
     {
-        public float X { get; set; }
+        public float X { get; set; } 
         public float Y { get; set; }
         public float DX { get; set; }
         public float DY { get; set; }
