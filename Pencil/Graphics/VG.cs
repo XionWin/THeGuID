@@ -46,10 +46,9 @@ namespace Pencil.Graphics
             return d;
         }
 
-        public static void deletePathCache(ref VGPathCache cache)
-        {
-            
-        }
+        public static void deletePathCache(ref VGPathCache cache) => cache.Clean();
+
+
 
     }
 
