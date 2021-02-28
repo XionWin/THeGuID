@@ -1,4 +1,3 @@
-
 using System;
 
 namespace GLESV2.Def

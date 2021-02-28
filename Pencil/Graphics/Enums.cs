@@ -135,18 +135,18 @@ namespace Pencil.Graphics
 
 	public enum VGsolidity
 	{
+		// Winding for solid shapes
 		SOLID = 1,
-		// CCW
+		// Winding for holes
 		HOLE = 2,
-		// CW
 	}
 
 	public enum VGwinding
 	{
+		// CCW
 		CCW = 1,
-		// Winding for solid shapes
+		// CW
 		CW = 2,
-		// Winding for holes
 	}
 
 	public enum GLNVGshaderType
