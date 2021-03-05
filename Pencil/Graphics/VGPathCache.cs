@@ -5,10 +5,10 @@ namespace Pencil.Graphics
 {
     public class VGPathCache
     {
-        public IEnumerable<float> Bounds { get; private set; }
-        public IEnumerable<VGPoint> Points { get; set; }
-        public IEnumerable<VGPath> Paths { get; set; }
-        public IEnumerable<VGVertex> Vertexs { get; set; }
+        public IList<float> Bounds { get; private set; }
+        public IList<VGPoint> Points { get; private set; }
+        public IList<VGPath> Paths { get; private set; }
+        public IList<VGVertex> Vertexs { get; private set; }
 
         public VGPathCache()
         {

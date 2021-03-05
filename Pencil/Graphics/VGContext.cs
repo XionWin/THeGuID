@@ -6,10 +6,11 @@ namespace Pencil.Graphics
 {
     public struct VGContext
     {
+        public const int NVG_MAX_STATES = 32;
         public IEnumerable<float> Commands { get; set; }
         public float CommandX { get; set; }
         public float CommandY { get; set; }
-        public IEnumerable<VGState> States { get; set; }
+        public IList<VGState> States { get; set; }
         public VGPathCache Cache { get; set; }  
         public float TessTol { get; set; }
         public float DistTol { get; set; }
@@ -28,6 +29,13 @@ namespace Pencil.Graphics
         }
 
         public VGState GetState() => this.States.Last();
+
+        public void Save()
+        {
+            if(this.States.Count() >= NVG_MAX_STATES)
+                throw new Exception("VGContext reach the Max States Count");
+            this.States.Add(this.States.Last().Clone());
+        }
         
     }
 }
