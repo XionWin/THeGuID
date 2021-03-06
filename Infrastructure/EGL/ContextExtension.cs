@@ -45,7 +45,7 @@ namespace EGL
 
             var desiredConfig = new[] {
                 Definition.SURFACE_TYPE, (int)surfaceType,
-                Definition.RENDERABLE_TYPE, Definition.OPENGL_BIT,
+                Definition.RENDERABLE_TYPE, Definition.OPENGL_ES3_BIT,
                 Definition.RED_SIZE, 8,
                 Definition.GREEN_SIZE, 8,
                 Definition.BLUE_SIZE, 8,

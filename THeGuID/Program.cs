@@ -22,7 +22,7 @@ namespace THeGuID
 
             var fd = Libc.Context.open("/dev/dri/card1", Libc.OpenFlags.ReadWrite);
 
-            using (var ctx = new EGL.Context(fd, EGL.RenderableSurfaceType.OpenGLESV2) { VerticalSynchronization = true })
+            using (var ctx = new EGL.Context(fd, EGL.RenderableSurfaceType.OpenGLES) { VerticalSynchronization = true })
             {
                 Console.WriteLine($"GL Extensions: {GLESV2.GL.GetString(GLESV2.Def.StringName.Extensions)}");
                 Console.WriteLine($"GL Version: {GLESV2.GL.GetString(GLESV2.Def.StringName.Version)}");
@@ -70,6 +70,9 @@ namespace THeGuID
                             var fpp = fPtr + 2 + (i % 3);
                             *fpp = 1.0f;
                         }
+
+                        GLESV2.GL.glGenVertexArrays(1, out uint vao);
+                        GLESV2.GL.glBindVertexArray(vao);
                         
                         GLESV2.GL.glGenBuffers(1, out uint vbo);
                         GLESV2.GL.glBindBuffer(GLESV2.Def.BufferTarget.ArrayBuffer, vbo);
@@ -77,7 +80,7 @@ namespace THeGuID
                     }
                 }
 
-                using (var program = new GLESV2.GFX.GfxProgram(@"Shader/simplevertshader.glsl", @"Shader/simplefragshader.glsl"))
+                using (var program = new GLESV2.GFX.GfxProgram(@"Shader/simplevertshader_v3.glsl", @"Shader/simplefragshader_v3.glsl"))
                 {
                     GLESV2.GL.glClearColor(1f, 1f, 1f, .2f);
 

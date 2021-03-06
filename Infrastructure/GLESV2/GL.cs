@@ -129,6 +129,10 @@ namespace GLESV2
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern void glDrawArrays(Def.BeginMode beginMode, int first, uint count);
 
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void glGenVertexArrays (uint n, out uint arrayId);
+        [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void glBindVertexArray (uint array);
 
         [DllImport(Lib.Name, CallingConvention = CallingConvention.Cdecl)]
         public static extern void glGenBuffers (uint n, out uint bufferId);
